@@ -1,5 +1,5 @@
 local Globals = require "StatsAPI/Globals"
-local Math = require "StatsAPI/Math"
+local Math = require "StatsAPI/lib/Math"
 
 local Stress = {}
 
