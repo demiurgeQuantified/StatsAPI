@@ -4,3 +4,4 @@ description=Reimplements stat calculations in Lua so that mods can mess with the
 versionMin=41.78.16
 authors=albion
 modversion=0.2.0
+poster=poster.png
