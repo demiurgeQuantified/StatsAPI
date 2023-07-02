@@ -86,8 +86,8 @@ Fatigue.updateSleep = function(character)
     local modData = character:getModData()
     local forceWakeUpTime = modData.ForceWakeUpTime or 9
     
-    local time = gameTime:getTimeOfDay()
-    local lastTime = gameTime:getLastTimeOfDay()
+    local time = Globals.gameTime:getTimeOfDay()
+    local lastTime = Globals.gameTime:getLastTimeOfDay()
     if lastTime > time then
         if lastTime < forceWakeUpTime then
             time = time + 24
