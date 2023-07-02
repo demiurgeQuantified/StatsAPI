@@ -1,16 +1,11 @@
 local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 
----@type WorldSoundManager
-local worldSoundManager
-Events.OnGameStart.Add(function()
-    worldSoundManager = getWorldSoundManager()
-end)
-
 local StatsAPI = {}
 StatsAPI.Fatigue = require "StatsAPI/Fatigue"
 StatsAPI.Hunger = require "StatsAPI/Hunger"
 StatsAPI.Thirst = require "StatsAPI/Thirst"
+StatsAPI.Stress = require "StatsAPI/Stress"
 
 ---@param character IsoGameCharacter
 ---@param stats Stats
@@ -32,39 +27,6 @@ StatsAPI.updateEndurance = function(character, stats, asleep)
     end
     
     stats:setEndurance(Math.clamp(endurance, 0, 1))
-end
-
----@param character IsoPlayer
----@param stats Stats
----@param asleep boolean
-StatsAPI.updateStress = function(character, stats, asleep)
-    if stats:getPanic() > 100 then
-        stats:setPanic(100)
-    end
-    
-    local stress = stats:getStress()
-    stress = stress + worldSoundManager:getStressFromSounds(character:getX(), character:getY(), character:getZ()) * ZomboidGlobals.StressFromSoundsMultiplier
-    
-    local bodyDamage = character:getBodyDamage()
-    if bodyDamage:getNumPartsBitten() > 0 then
-        stress = stress + ZomboidGlobals.StressFromBiteOrScratch * Globals.delta
-    end
-    if bodyDamage:getNumPartsScratched() > 0 then
-        stress = stress + ZomboidGlobals.StressFromBiteOrScratch * Globals.delta
-    end
-    if bodyDamage:isInfected() or bodyDamage:isIsFakeInfected() then
-        stress = stress + ZomboidGlobals.StressFromBiteOrScratch * Globals.delta
-    end
-    
-    if character:HasTrait("Hemophobic") then
-        stress = stress + character:getTotalBlood() * ZomboidGlobals.StressFromHemophobic * (Globals.multiplier / 0.8) * Globals.deltaMinutesPerDay
-    end
-    
-    if not asleep then
-        stress = stress - ZomboidGlobals.StressDecrease * Globals.delta
-    end
-    
-    stats:setStress(Math.clamp(stress, 0, 1))
 end
 
 ---@param character IsoPlayer
@@ -98,7 +60,11 @@ StatsAPI.CalculateStats = function(character)
     local stats = character:getStats()
     local asleep = character:isAsleep()
     
-    StatsAPI.updateStress(character, stats, asleep)
+    if stats:getPanic() > 100 then
+        stats:setPanic(100)
+    end
+    
+    StatsAPI.Stress.updateStress(character, stats, asleep)
     StatsAPI.updateEndurance(character, stats, asleep)
     StatsAPI.Thirst.updateThirst(character, stats, asleep)
     StatsAPI.Fatigue.updateFatigue(character, stats, asleep)
@@ -142,6 +108,18 @@ end
 ---@param modifier number The thirst multiplier to give characters with the trait
 StatsAPI.addTraitThirstModifier = function(trait, modifier)
     StatsAPI.Thirst.thirstMultipliers[trait] = modifier
+end
+
+---Toggles whether being injured causes characters to gain stress.
+---@param injuryStress boolean Should injuries cause stress?
+StatsAPI.setStressFromInjuries = function(injuryStress)
+    StatsAPI.Stress.injuryStress = injuryStress
+end
+
+---Toggles whether being infected with the Knox virus causes characters to gain stress.
+---@param infectionStress boolean Should infection cause stress?
+StatsAPI.setStressFromInfection = function(infectionStress)
+    StatsAPI.Stress.infectionStress = infectionStress
 end
 
 Hook.CalculateStats.Add(StatsAPI.CalculateStats)
