@@ -1,5 +1,6 @@
 local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
+local StatsData = require "StatsAPI/StatsData"
 
 local StatsAPI = {}
 StatsAPI.Fatigue = require "StatsAPI/Fatigue"
@@ -78,6 +79,13 @@ StatsAPI.CalculateStats = function(character)
     end
 end
 
+---@param playerIndex int
+---@param player IsoPlayer
+StatsAPI.preparePlayer = function(playerIndex, player)
+    StatsData.createPlayerData(player)
+end
+
+Events.OnCreatePlayer.Add(StatsAPI.preparePlayer)
 
 
 ---Adds a fatigue multiplier to apply to characters who have the given trait.

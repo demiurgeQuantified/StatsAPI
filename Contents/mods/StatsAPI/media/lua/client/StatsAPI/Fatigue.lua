@@ -1,7 +1,8 @@
 local Math = require "StatsAPI/lib/Math"
-local Globals = require "StatsAPI/Globals"
 local bClient = isClient()
 
+local Globals = require "StatsAPI/Globals"
+local StatsData = require "StatsAPI/StatsData"
 local Fatigue = {}
 
 
@@ -83,8 +84,8 @@ end
 
 ---@param character IsoPlayer
 Fatigue.updateSleep = function(character)
-    local modData = character:getModData()
-    local forceWakeUpTime = modData.ForceWakeUpTime or 9
+    local statsData = StatsData.getPlayerData(character)
+    local forceWakeUpTime = statsData.forceWakeUpTime or 9
     
     local time = Globals.gameTime:getTimeOfDay()
     local lastTime = Globals.gameTime:getLastTimeOfDay()
@@ -103,12 +104,12 @@ Fatigue.updateSleep = function(character)
         shouldWakeUp = true
     elseif bClient or getNumActivePlayers() > 1 then
         shouldWakeUp = shouldWakeUp or character:pressedAim() or character:pressedMovement(false)
-    elseif modData.ForceWakeUp then
+    elseif statsData.forceWakeUp then
         shouldWakeUp = true
     end
     
     if shouldWakeUp then
-        modData.ForceWakeUp = false
+        statsData.forceWakeUp = false
         getSoundManager():setMusicWakeState(character, "WakeNormal")
         getSleepingEvent():wakeUp(character)
         character:setForceWakeUpTime(-1)
@@ -128,7 +129,7 @@ local old_setForceWakeUpTime = isoGameCharacter.setForceWakeUpTime
 ---@param self IsoGameCharacter
 ---@param ForceWakeUpTime float
 isoGameCharacter.setForceWakeUpTime = function(self, ForceWakeUpTime)
-    self:getModData().ForceWakeUpTime = ForceWakeUpTime
+    StatsData.getPlayerData(self).forceWakeUpTime = ForceWakeUpTime
     old_setForceWakeUpTime(self, ForceWakeUpTime)
 end
 
@@ -137,7 +138,7 @@ local old_forceAwake = isoGameCharacter.forceAwake
 ---@param self IsoGameCharacter
 isoGameCharacter.forceAwake = function(self)
     if self:isAsleep() then
-        self:getModData().ForceWakeUp = true
+        StatsData.getPlayerData(self).forceWakeUp = true
     end
     old_forceAwake(self)
 end
