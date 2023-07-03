@@ -7,6 +7,7 @@ StatsAPI.Fatigue = require "StatsAPI/Fatigue"
 StatsAPI.Hunger = require "StatsAPI/Hunger"
 StatsAPI.Thirst = require "StatsAPI/Thirst"
 StatsAPI.Stress = require "StatsAPI/Stress"
+StatsAPI.Panic = require "StatsAPI/Panic"
 
 ---@param character IsoGameCharacter
 ---@param stats Stats
@@ -61,15 +62,12 @@ StatsAPI.CalculateStats = function(character)
     local stats = character:getStats()
     local asleep = character:isAsleep()
     
-    if stats:getPanic() > 100 then
-        stats:setPanic(100)
-    end
-    
     StatsAPI.Stress.updateStress(character, stats, asleep)
     StatsAPI.updateEndurance(character, stats, asleep)
     StatsAPI.Thirst.updateThirst(character, stats, asleep)
     StatsAPI.Fatigue.updateFatigue(character, stats, asleep)
     StatsAPI.Hunger.updateHunger(character, stats, asleep)
+    StatsAPI.Panic.updatePanic(character, stats, asleep)
     StatsAPI.updateFitness(character, stats)
     
     if not asleep then
@@ -83,6 +81,7 @@ end
 ---@param player IsoPlayer
 StatsAPI.preparePlayer = function(playerIndex, player)
     StatsData.createPlayerData(player)
+    StatsAPI.Panic.disableVanillaPanic(player)
 end
 
 Events.OnCreatePlayer.Add(StatsAPI.preparePlayer)

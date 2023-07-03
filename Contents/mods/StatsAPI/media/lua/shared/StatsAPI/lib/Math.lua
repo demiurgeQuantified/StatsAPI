@@ -40,4 +40,11 @@ Math.clamp = function(num, min, max)
     return num
 end
 
+---Returns the nearest integer less than/equal to num (rounds it down).
+---@param num number
+---@return number
+Math.floor = function(num)
+    return num - num % 1
+end
+
 return Math
