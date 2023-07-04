@@ -4,6 +4,59 @@ local Globals = require "StatsAPI/Globals"
 local StatsData = require "StatsAPI/StatsData"
 local Panic = {}
 
+Panic.traitMultipliers = {
+    Cowardly = 2,
+    Brave = 0.3,
+    Desensitized = 0
+}
+
+---@param character IsoGameCharacter
+Panic.getPanicMultiplier = function(character)
+    local multiplier = 1
+    
+    if character:getBetaEffect() > 0 then
+        multiplier = Math.clamp(multiplier - character:getBetaDelta(), 0, 1)
+    end
+    
+    if character:getVehicle() then
+        multiplier = multiplier * 0.5
+    end
+    
+    return multiplier
+end
+
+---@param character IsoGameCharacter
+---@return number
+Panic.getTraitMultiplier = function(character)
+    local panicMultiplier = 1
+    
+    for trait, multiplier in pairs(Panic.traitMultipliers) do
+        if character:HasTrait(trait) then
+            panicMultiplier = panicMultiplier * multiplier
+        end
+    end
+    
+    return panicMultiplier
+end
+
+Panic.getPanicReductionModifier = function(character, asleep)
+    local modifier = 1
+    
+    if asleep then
+        modifier = 2
+    end
+    
+    return modifier
+end
+
+---@param character IsoPlayer
+---@return number
+Panic.getSurvivalReduction = function(character)
+    local panicReduction = StatsData.getPlayerData(character).panicReduction
+    local monthsSurvived = Math.floor(Globals.gameTime:getNightsSurvived() / 30)
+    return panicReduction * Math.min(monthsSurvived, 5)
+end
+
 ---@param character IsoPlayer
 ---@param stats Stats
 ---@param asleep boolean
@@ -25,28 +78,7 @@ end
 ---@param stats Stats
 ---@param zombies int
 Panic.increasePanic = function(character, stats, zombies)
-    local panicChange = 1
-    
-    if character:getVehicle() then
-        panicChange = panicChange * 0.5
-    end
-    
-    if character:getBetaEffect() > 0 then
-        panicChange = Math.clamp(panicChange - character:getBetaDelta(), 0, 1)
-    end
-    
-    -- TODO: this should obviously be done with a table
-    if character:HasTrait("Cowardly") then
-        panicChange = panicChange * 2
-    end
-    if character:HasTrait("Brave") then
-        panicChange = panicChange * 0.3
-    end
-    if character:HasTrait("Desensitized") then
-        panicChange = 0
-    end
-    
-    panicChange = panicChange * StatsData.getPlayerData(character).panicIncrease * zombies
+    local panicChange = StatsData.getPlayerData(character).panicIncrease * Panic.getPanicMultiplier(character) * zombies
     
     stats:setPanic(Math.min(stats:getPanic() + panicChange, 100))
 end
@@ -58,10 +90,9 @@ Panic.reducePanic = function(character, stats, asleep)
     local panic = stats:getPanic()
     if panic > 0 then
         local panicReduction = StatsData.getPlayerData(character).panicReduction
-        local monthsSurvived = Math.min(Math.floor(Globals.gameTime:getNightsSurvived() / 30), 5)
         
-        local panicChange = panicReduction * Globals.multiplier / 1.6 + panicReduction * monthsSurvived
-        if asleep then panicChange = panicChange * 2 end
+        local panicChange = panicReduction * Globals.multiplier / 1.6 + Panic.getSurvivalReduction(character)
+        panicChange = panicChange * Panic.getPanicReductionModifier(character)
     
         stats:setPanic(Math.max(panic - panicChange, 0))
     end

@@ -117,6 +117,13 @@ StatsAPI.addTraitThirstModifier = function(trait, modifier)
     StatsAPI.Thirst.thirstMultipliers[trait] = modifier
 end
 
+---Adds a thirst multiplier to apply to characters who have the given trait.
+---@param trait string The ID of the trait
+---@param modifier number The thirst multiplier to give characters with the trait
+StatsAPI.addTraitPanicModifier = function(trait, modifier)
+    StatsAPI.Panic.traitMultipliers[trait] = modifier
+end
+
 ---Toggles whether being injured causes characters to gain stress.
 ---@param injuryStress boolean Should injuries cause stress?
 StatsAPI.setStressFromInjuries = function(injuryStress)
