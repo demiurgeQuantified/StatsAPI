@@ -2,10 +2,7 @@ local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 
 local Thirst = {}
-Thirst.thirstMultipliers = {
-    HighThirst = 2,
-    LowThirst = 0.5
-}
+Thirst.thirstMultipliers = {}
 
 ---@param character IsoGameCharacter
 Thirst.getThirstMultiplier = function(character)

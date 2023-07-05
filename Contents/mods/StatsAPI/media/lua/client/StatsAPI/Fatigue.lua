@@ -7,20 +7,8 @@ local Fatigue = {}
 
 
 Fatigue.bedEfficiency = {goodBed = 1.1, badBed = 0.9, floor = 0.6}
-Fatigue.fatigueRate = {
-    awake = {
-        NeedsLessSleep = 0.7,
-        NeedsMoreSleep = 1.3
-    },
-    asleep = {
-        NeedsLessSleep = 0.75,
-        NeedsMoreSleep = 1.18
-    }
-}
-Fatigue.sleepEfficiency = {
-    NightOwl = 1.4,
-    Insomniac = 0.5
-}
+Fatigue.fatigueRate = {awake = {}, asleep = {}}
+Fatigue.sleepEfficiency = {}
 
 ---@param character IsoGameCharacter
 ---@param asleep boolean

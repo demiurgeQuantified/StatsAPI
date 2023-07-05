@@ -2,10 +2,7 @@ local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 
 local Hunger = {}
-Hunger.appetiteMultipliers = {
-    HeartyAppitite = 1.5,
-    LightEater = 0.75
-}
+Hunger.appetiteMultipliers = {}
 
 ---@param character IsoGameCharacter
 ---@param stats Stats|nil

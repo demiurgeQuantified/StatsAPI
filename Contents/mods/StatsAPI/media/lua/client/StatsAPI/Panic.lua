@@ -4,11 +4,7 @@ local Globals = require "StatsAPI/Globals"
 local StatsData = require "StatsAPI/StatsData"
 local Panic = {}
 
-Panic.traitMultipliers = {
-    Cowardly = 2,
-    Brave = 0.3,
-    Desensitized = 0
-}
+Panic.traitMultipliers = {}
 
 ---@param character IsoGameCharacter
 Panic.getPanicMultiplier = function(character)

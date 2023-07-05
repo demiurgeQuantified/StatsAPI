@@ -1,6 +1,7 @@
 local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 local StatsData = require "StatsAPI/StatsData"
+local Vanilla = require "StatsAPI/Vanilla"
 
 local StatsAPI = {}
 StatsAPI.Fatigue = require "StatsAPI/Fatigue"
@@ -116,6 +117,9 @@ StatsAPI.setStressFromInfection = function(infectionStress)
     StatsAPI.Stress.infectionStress = infectionStress
 end
 
-Hook.CalculateStats.Add(StatsAPI.CalculateStats)
+---Prevents the vanilla trait effects from being added. Must be called before OnGameBoot or it will have no effect.
+StatsAPI.disableVanillaTraits = function()
+    Vanilla.wantVanilla = false
+end
 
 return StatsAPI
