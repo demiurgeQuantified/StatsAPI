@@ -37,26 +37,6 @@ StatsAPI.updateFitness = function(character, stats)
     stats:setFitness(character:getPerkLevel(Perks.Fitness) / 5 - 1)
 end
 
----@param character IsoGameCharacter
----@param stats Stats
-StatsAPI.updateBoredom = function(character, stats)
-    if not character:isReading() then
-        local boredomChange = 0
-        local square = character:getSquare()
-        local lastSquare = character:getLastSquare()
-        if square == lastSquare then
-            boredomChange = boredomChange + 0.0013
-        end
-        if square and lastSquare then -- squares can be nil while falling
-            local room = square:getRoom()
-            if room and room == lastSquare:getRoom() then
-                boredomChange = boredomChange + 0.00135
-            end
-        end
-        stats:setBoredom(Math.min(stats:getBoredom() + boredomChange * Globals.delta, 1))
-    end
-end
-
 ---@param character IsoPlayer
 StatsAPI.CalculateStats = function(character)
     local stats = character:getStats()
@@ -70,12 +50,12 @@ StatsAPI.CalculateStats = function(character)
     StatsAPI.Panic.updatePanic(character, stats, asleep)
     StatsAPI.updateFitness(character, stats)
     
-    if not asleep then
-        StatsAPI.updateBoredom(character, stats)
-    else
+    if asleep then
         StatsAPI.Fatigue.updateSleep(character, stats)
     end
 end
+
+Hook.CalculateStats.Add(StatsAPI.CalculateStats)
 
 ---@param playerIndex int
 ---@param player IsoPlayer
