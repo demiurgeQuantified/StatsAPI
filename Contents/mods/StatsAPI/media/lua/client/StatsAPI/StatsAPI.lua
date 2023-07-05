@@ -1,14 +1,14 @@
 local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 local StatsData = require "StatsAPI/StatsData"
-local Vanilla = require "StatsAPI/Vanilla"
+local Vanilla = require "StatsAPI/vanilla/VanillaTraits"
 
 local StatsAPI = {}
-StatsAPI.Fatigue = require "StatsAPI/Fatigue"
-StatsAPI.Hunger = require "StatsAPI/Hunger"
-StatsAPI.Thirst = require "StatsAPI/Thirst"
-StatsAPI.Stress = require "StatsAPI/Stress"
-StatsAPI.Panic = require "StatsAPI/Panic"
+StatsAPI.Fatigue = require "StatsAPI/stats/Fatigue"
+StatsAPI.Hunger = require "StatsAPI/stats/Hunger"
+StatsAPI.Thirst = require "StatsAPI/stats/Thirst"
+StatsAPI.Stress = require "StatsAPI/stats/Stress"
+StatsAPI.Panic = require "StatsAPI/stats/Panic"
 
 ---@param character IsoGameCharacter
 ---@param stats Stats
