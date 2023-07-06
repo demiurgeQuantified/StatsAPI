@@ -1,0 +1,5 @@
+---@class OverTimeEffect
+---@field startTime int
+---@field duration int
+---@field amount number
+---@field stat string

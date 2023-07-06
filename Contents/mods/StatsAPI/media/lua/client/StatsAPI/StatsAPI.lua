@@ -1,4 +1,5 @@
 local CharacterStats = require "StatsAPI/CharacterStats"
+local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 
 local StatsAPI = {}
 StatsAPI.Fatigue = require "StatsAPI/stats/Fatigue"
@@ -63,6 +64,19 @@ end
 ---@param modifier number The panic multiplier to give characters with the trait
 StatsAPI.addTraitPanicModifier = function(trait, modifier)
     StatsAPI.Panic.traitMultipliers[trait] = modifier
+end
+
+
+--TODO: add a bunch of these for different time formats
+---@param character IsoGameCharacter
+---@param stat string
+---@param total number
+---@param time number
+StatsAPI.addStatOverTime = function(character, stat, total, time)
+    local effect = OverTimeEffects.create(character, stat, total / time, time)
+    if not effect then
+        error("StatsAPI: Attempted to create OverTimeEffect for unknown stat " .. tostring(stat), 2)
+    end
 end
 
 
