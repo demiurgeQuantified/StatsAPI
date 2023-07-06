@@ -117,6 +117,18 @@ StatsAPI.setStressFromInfection = function(infectionStress)
     StatsAPI.Stress.infectionStress = infectionStress
 end
 
+---Adds a constant change to stress, the cause being whichever the mod maker wishes
+---@param sourceName string The name of the stress source for later identification
+---@param dailyChange number The percent amount of change in stat
+StatsAPI.AddDailyStressChange = function(sourceName, dailyChange)
+    StatsAPI.Stress.dailyChanges[sourceName] = dailyChange/100
+end
+---Adds a constant change to stress, the cause being whichever the mod maker wishes
+---@param sourceName string The name of the stress source for later identification
+---@param dailyChange number The percent amount of change in stat
+StatsAPI.RemoveDailyStressChange = function(sourceName)
+    StatsAPI.Stress.dailyChanges[sourceName] = nil
+end
 ---Prevents the vanilla trait effects from being added. Must be called before OnGameBoot or it will have no effect.
 StatsAPI.disableVanillaTraits = function()
     Vanilla.wantVanilla = false
