@@ -1,7 +1,6 @@
 local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 local StatsData = require "StatsAPI/StatsData"
-local Vanilla = require "StatsAPI/vanilla/VanillaTraits"
 
 local StatsAPI = {}
 StatsAPI.Fatigue = require "StatsAPI/stats/Fatigue"
@@ -141,6 +140,7 @@ end
 
 ---Prevents the vanilla trait effects from being added. Must be called before OnGameBoot or it will have no effect.
 StatsAPI.disableVanillaTraits = function()
+    local Vanilla = require "StatsAPI/vanilla/VanillaTraits"
     Vanilla.wantVanilla = false
 end
 
