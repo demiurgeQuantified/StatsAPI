@@ -62,8 +62,8 @@ Hunger.updateHunger = function(character, stats, asleep)
             hungerChange = hungerChange * ZomboidGlobals.HungerIncreaseWhenWellFed * Globals.statsDecreaseMultiplier
         end
     end
-    --- TODO Consider if the API should handle some conditions like moving or sleeping for modded changes, or whether that
-    --- should fall on the API users to manage
+    -- TODO Consider if the API should handle some conditions like moving or sleeping for modded changes, or whether that
+    -- should fall on the API users to manage
     hungerChange = hungerChange + Hunger.getModdedHungerChange() * appetiteMultiplier *  Globals.statsDecreaseMultiplier
     stats:setHunger(Math.min(stats:getHunger() + hungerChange, 1))
 end

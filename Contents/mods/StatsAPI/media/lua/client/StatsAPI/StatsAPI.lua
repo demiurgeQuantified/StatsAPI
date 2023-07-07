@@ -157,6 +157,26 @@ StatsAPI.removeHungerChange = function(sourceName)
     StatsAPI.Hunger.modChanges[sourceName] = nil
 end
 
+---Adds a constant change to fatigue
+---@param sourceName string The name of the stress source for later identification
+---@param dailyChange number The percent amount the stat should change by over a day
+StatsAPI.addThirstChangeDaily = function(sourceName, dailyChange)
+    StatsAPI.Hunger.modChanges[sourceName] = dailyChange / 86400 / 100
+end
+
+---Same as above, but calculated over an hour for higher precision
+---@param sourceName string The name of the stress source for later identification
+---@param hourlyChange number The percent amount the stat should change by over an hour
+StatsAPI.addThirstChangeHourly = function(sourceName, hourlyChange)
+    StatsAPI.Hunger.modChanges[sourceName] = hourlyChange / 3600 / 100
+end
+
+---Removes a previously added change to fatigue
+---@param sourceName string The name of the stress source for later identification
+StatsAPI.removeThirstChange = function(sourceName)
+    StatsAPI.Thirst.modChanges[sourceName] = nil
+end
+
 ---Prevents the vanilla trait effects from being added. Must be called before OnGameBoot or it will have no effect.
 StatsAPI.disableVanillaTraits = function()
     local Vanilla = require "StatsAPI/vanilla/VanillaTraits"

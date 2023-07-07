@@ -4,6 +4,17 @@ local Globals = require "StatsAPI/Globals"
 local Thirst = {}
 Thirst.thirstMultipliers = {}
 
+---@type table<string, number>
+Thirst.modChanges = {}
+
+Thirst.getModdedThirstChange = function()
+    local thirstChange = 0
+    for _, modChange in pairs(Thirst.modChanges) do
+        thirstChange = thirstChange + modChange
+    end
+    return thirstChange * Globals.gameWorldSecondsSinceLastUpdate
+end
+
 ---@param character IsoGameCharacter
 Thirst.getThirstMultiplier = function(character)
     local thirstMultiplier = 1
@@ -31,6 +42,8 @@ Thirst.updateThirst = function(character, stats, asleep)
         else
             thirst = thirst + ZomboidGlobals.ThirstSleepingIncrease * thirstMultiplier
         end
+        --- I don't know what remains of thirst after these multipliers
+        thirst = thirst + Thirst.getModdedThirstChange() * ZomboidGlobals.ThirstIncrease * character:getThirstMultiplier() * thirstMultiplier
         stats:setThirst(Math.min(thirst, 1))
     end
     character:autoDrink()
