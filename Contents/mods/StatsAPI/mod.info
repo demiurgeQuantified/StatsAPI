@@ -3,5 +3,5 @@ id=StatsAPI
 description=Reimplements stat calculations in Lua so that mods can mess with them.
 versionMin=41.78.16
 authors=albion
-modversion=0.2.1
+modversion=0.3.0
 poster=poster.png
