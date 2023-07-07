@@ -121,19 +121,38 @@ StatsAPI.addStressChangeDaily = function(sourceName, dailyChange)
     Stress.modChanges[sourceName] = dailyChange / 86400 / 100
 end
 
----Adds a constant change to stress
+---Same as above, but calculated over an hour for higher precision
 ---@param sourceName string The name of the stress source for later identification
 ---@param hourlyChange number The percent amount the stat should change by over an hour
 StatsAPI.addStressChangeHourly = function(sourceName, hourlyChange)
     Stress.modChanges[sourceName] = hourlyChange / 3600 / 100
 end
 
----Adds a constant change to stress, the cause being whichever the mod maker wishes
+---Removes a previously added change to stress
 ---@param sourceName string The name of the stress source for later identification
 StatsAPI.removeStressChange = function(sourceName)
     Stress.modChanges[sourceName] = nil
 end
 
+---Adds a constant change to hunger
+---@param sourceName string The name of the stress source for later identification
+---@param dailyChange number The percent amount the stat should change by over a day
+StatsAPI.addHungerChangeDaily = function(sourceName, dailyChange)
+    StatsAPI.Hunger.modChanges[sourceName] = dailyChange / 86400 / 100
+end
+
+---Same as above, but calculated over an hour for higher precision
+---@param sourceName string The name of the stress source for later identification
+---@param hourlyChange number The percent amount the stat should change by over an hour
+StatsAPI.addHungerChangeHourly = function(sourceName, hourlyChange)
+    StatsAPI.Hunger.modChanges[sourceName] = hourlyChange / 3600 / 100
+end
+
+---Removes a previously added change to hunger
+---@param sourceName string The name of the stress source for later identification
+StatsAPI.removeHungerChange = function(sourceName)
+    StatsAPI.Hunger.modChanges[sourceName] = nil
+end
 
 ---Prevents the vanilla trait effects from being added. Must be called before OnGameBoot or it will have no effect.
 StatsAPI.disableVanillaTraits = function()

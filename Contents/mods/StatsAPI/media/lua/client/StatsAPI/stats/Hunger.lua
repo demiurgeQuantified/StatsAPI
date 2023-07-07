@@ -4,6 +4,17 @@ local Globals = require "StatsAPI/Globals"
 local Hunger = {}
 Hunger.appetiteMultipliers = {}
 
+---@type table<string, number>
+Hunger.modChanges = {}
+
+Hunger.getModdedHungerChange = function()
+    local hungerChange = 0
+    for _, modChange in pairs(Hunger.modChanges) do
+        hungerChange = hungerChange + modChange
+    end
+    return hungerChange * Globals.gameWorldSecondsSinceLastUpdate
+end
+
 ---@param character IsoGameCharacter
 ---@return number
 Hunger.getAppetiteMultiplier = function(character)
@@ -46,7 +57,9 @@ Hunger.updateHunger = function(self)
             hungerChange = hungerChange * ZomboidGlobals.HungerIncreaseWhenWellFed * Globals.statsDecreaseMultiplier
         end
     end
-    
+    --- TODO: Consider if the API should handle some conditions like moving or sleeping for modded changes, or whether that
+    --- should fall on the API users to manage
+    hungerChange = hungerChange + Hunger.getModdedHungerChange() * appetiteMultiplier *  Globals.statsDecreaseMultiplier
     self.stats.hunger = self.stats.hunger + hungerChange
 end
 
