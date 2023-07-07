@@ -1,7 +1,6 @@
 local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 local StatsData = require "StatsAPI/StatsData"
-local Vanilla = require "StatsAPI/vanilla/VanillaTraits"
 
 local StatsAPI = {}
 StatsAPI.Fatigue = require "StatsAPI/stats/Fatigue"
@@ -105,6 +104,7 @@ StatsAPI.addTraitPanicModifier = function(trait, modifier)
     StatsAPI.Panic.traitMultipliers[trait] = modifier
 end
 
+
 ---Toggles whether being injured causes characters to gain stress.
 ---@param injuryStress boolean Should injuries cause stress?
 StatsAPI.setStressFromInjuries = function(injuryStress)
@@ -117,8 +117,30 @@ StatsAPI.setStressFromInfection = function(infectionStress)
     StatsAPI.Stress.infectionStress = infectionStress
 end
 
+---Adds a constant change to stress
+---@param sourceName string The name of the stress source for later identification
+---@param dailyChange number The percent amount the stat should change by over a day
+StatsAPI.addStressChangeDaily = function(sourceName, dailyChange)
+    StatsAPI.Stress.modChanges[sourceName] = dailyChange / 86400 / 100
+end
+
+---Adds a constant change to stress
+---@param sourceName string The name of the stress source for later identification
+---@param hourlyChange number The percent amount the stat should change by over an hour
+StatsAPI.addStressChangeHourly = function(sourceName, hourlyChange)
+    StatsAPI.Stress.modChanges[sourceName] = hourlyChange / 3600 / 100
+end
+
+---Adds a constant change to stress, the cause being whichever the mod maker wishes
+---@param sourceName string The name of the stress source for later identification
+StatsAPI.removeStressChange = function(sourceName)
+    StatsAPI.Stress.modChanges[sourceName] = nil
+end
+
+
 ---Prevents the vanilla trait effects from being added. Must be called before OnGameBoot or it will have no effect.
 StatsAPI.disableVanillaTraits = function()
+    local Vanilla = require "StatsAPI/vanilla/VanillaTraits"
     Vanilla.wantVanilla = false
 end
 

@@ -31,6 +31,6 @@ end
 
 -- Delays the code until the game has reached the main menu. Not strictly necessary, but traits usually aren't created
 -- until then either.
-Events.OnGameBoot.Add(Vanilla.addTraits)
+Events.OnGameBoot.Add(Vanilla.addTraitModifiers)
 
 return Vanilla
