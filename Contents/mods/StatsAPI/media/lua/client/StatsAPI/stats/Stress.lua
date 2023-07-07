@@ -6,7 +6,9 @@ local Stress = {}
 Stress.injuryStress = true
 Stress.infectionStress = true
 
-Stress.dailyChanges = {}
+---@type table<string, number>
+Stress.modChanges = {}
+
 ---@type WorldSoundManager
 local worldSoundManager
 Events.OnGameStart.Add(function()
@@ -42,14 +44,15 @@ Stress.getTraitStress = function(character)
     end
     return stressChange
 end
----@param character IsoGameCharacter
-Stress.getDailyStressChange = function()
+
+Stress.getModdedStressChange = function()
     local stressChange = 0
-    for dailyDelta in Stress.dailyDeltas do
-        stressChange = stressChange + dailyDelta * Globals.deltaMinutesPerDay
+    for _, modChange in pairs(Stress.modChanges) do
+        stressChange = stressChange + modChange
     end
-    return stressChange
+    return stressChange * Globals.gameWorldSecondsSinceLastUpdate
 end
+
 ---@param character IsoPlayer
 ---@param stats Stats
 ---@param asleep boolean
@@ -58,7 +61,7 @@ Stress.updateStress = function(character, stats, asleep)
     stress = stress + worldSoundManager:getStressFromSounds(character:getX(), character:getY(), character:getZ()) * ZomboidGlobals.StressFromSoundsMultiplier
     stress = stress + Stress.getHealthStress(character)
     stress = stress + Stress.getTraitStress(character)
-    stress = stress + Stress.getDailyStressChange()
+    stress = stress + Stress.getModdedStressChange()
     if not asleep then
         stress = stress - ZomboidGlobals.StressDecrease * Globals.delta
     end
