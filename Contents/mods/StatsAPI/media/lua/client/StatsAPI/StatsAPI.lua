@@ -114,18 +114,18 @@ StatsAPI.setStressFromInfection = function(infectionStress)
     Stress.infectionStress = infectionStress
 end
 
----Adds a constant change to stress
+---Adds a function that has to return a change in stress, with the value adjusted for daily change
 ---@param sourceName string The name of the stress source for later identification
 ---@param dailyChange number The percent amount the stat should change by over a day
 StatsAPI.addStressChangeDaily = function(sourceName, dailyChange)
-    Stress.modChanges[sourceName] = dailyChange / 86400 / 100
+    Stress.modChanges[sourceName] = {dailyChange,1 / 86400 / 100}
 end
 
----Same as above, but calculated over an hour for higher precision
+---Adds a function that has to return a change in stress, with the value adjusted for hourly change
 ---@param sourceName string The name of the stress source for later identification
 ---@param hourlyChange number The percent amount the stat should change by over an hour
 StatsAPI.addStressChangeHourly = function(sourceName, hourlyChange)
-    Stress.modChanges[sourceName] = hourlyChange / 3600 / 100
+    Stress.modChanges[sourceName] = {hourlyChange,1 / 86400 / 100}
 end
 
 ---Removes a previously added change to stress

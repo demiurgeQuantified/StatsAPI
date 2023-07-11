@@ -6,7 +6,7 @@ local Stress = {}
 Stress.injuryStress = true
 Stress.infectionStress = true
 
----@type table<string, number>
+---@type table<string, table<function,number>>
 Stress.modChanges = {}
 
 ---@type WorldSoundManager
@@ -45,11 +45,11 @@ Stress.getTraitStress = function(character)
     -- TODO: handle cigarette stress here
     return stressChange
 end
-
-Stress.getModdedStressChange = function()
+---@param data StatsData
+Stress.getModdedStressChange = function(data)
     local stressChange = 0
     for _, modChange in pairs(Stress.modChanges) do
-        stressChange = stressChange + modChange
+        stressChange = stressChange + modChange[1](data) * modChange[2]
     end
     return stressChange * Globals.gameWorldSecondsSinceLastUpdate
 end
