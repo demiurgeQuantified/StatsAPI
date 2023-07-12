@@ -4,13 +4,14 @@ local Globals = require "StatsAPI/Globals"
 local Thirst = {}
 Thirst.thirstMultipliers = {}
 
----@type table<string, number>
+---@type table<string, table<function,number>>
 Thirst.modChanges = {}
 
-Thirst.getModdedThirstChange = function()
+---@param data StatsData
+Thirst.getModdedThirstChange = function(data)
     local thirstChange = 0
     for _, modChange in pairs(Thirst.modChanges) do
-        thirstChange = thirstChange + modChange
+        thirstChange = thirstChange + modChange[1](data) * modChange[2]
     end
     return thirstChange * Globals.gameWorldSecondsSinceLastUpdate
 end

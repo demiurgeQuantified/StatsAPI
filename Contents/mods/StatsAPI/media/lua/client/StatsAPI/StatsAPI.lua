@@ -137,18 +137,18 @@ StatsAPI.removeStressChange = function(sourceName)
     StatsAPI.Stress.modChanges[sourceName] = nil
 end
 
----Adds a constant change to hunger
+---Adds a function that has to return a change in hunger, with the value adjusted for daily change
 ---@param sourceName string The name of the stress source for later identification
 ---@param dailyChange number The percent amount the stat should change by over a day
 StatsAPI.addHungerChangeDaily = function(sourceName, dailyChange)
-    StatsAPI.Hunger.modChanges[sourceName] = dailyChange / 86400 / 100
+    StatsAPI.Hunger.modChanges[sourceName] = {dailyChange, 1 / 86400 / 100}
 end
 
----Same as above, but calculated over an hour for higher precision
+---Adds a function that has to return a change in hunger, with the value adjusted for hourly change
 ---@param sourceName string The name of the stress source for later identification
 ---@param hourlyChange number The percent amount the stat should change by over an hour
 StatsAPI.addHungerChangeHourly = function(sourceName, hourlyChange)
-    StatsAPI.Hunger.modChanges[sourceName] = hourlyChange / 3600 / 100
+    StatsAPI.Hunger.modChanges[sourceName] = {hourlyChange, 1/ 3600 / 100}
 end
 
 ---Removes a previously added change to hunger
@@ -157,18 +157,18 @@ StatsAPI.removeHungerChange = function(sourceName)
     StatsAPI.Hunger.modChanges[sourceName] = nil
 end
 
----Adds a constant change to fatigue
+---Adds a function that has to return a change in thurst, with the value adjusted for daily change
 ---@param sourceName string The name of the stress source for later identification
 ---@param dailyChange number The percent amount the stat should change by over a day
 StatsAPI.addThirstChangeDaily = function(sourceName, dailyChange)
-    StatsAPI.Hunger.modChanges[sourceName] = dailyChange / 86400 / 100
+    StatsAPI.Thirst.modChanges[sourceName] = {dailyChange, 1 / 86400 / 100}
 end
 
----Same as above, but calculated over an hour for higher precision
+---Adds a function that has to return a change in thirst, with the value adjusted for hourly change
 ---@param sourceName string The name of the stress source for later identification
 ---@param hourlyChange number The percent amount the stat should change by over an hour
 StatsAPI.addThirstChangeHourly = function(sourceName, hourlyChange)
-    StatsAPI.Hunger.modChanges[sourceName] = hourlyChange / 3600 / 100
+    StatsAPI.Thirst.modChanges[sourceName] = {hourlyChange, 1/ 3600 / 100}
 end
 
 ---Removes a previously added change to fatigue
