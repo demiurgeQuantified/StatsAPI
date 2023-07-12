@@ -4,13 +4,14 @@ local Globals = require "StatsAPI/Globals"
 local Hunger = {}
 Hunger.appetiteMultipliers = {}
 
----@type table<string, number>
+---@type table<string, table<function,number>>
 Hunger.modChanges = {}
 
-Hunger.getModdedHungerChange = function()
+---@param data StatsData
+Hunger.getModdedHungerChange = function(data)
     local hungerChange = 0
     for _, modChange in pairs(Hunger.modChanges) do
-        hungerChange = hungerChange + modChange
+        hungerChange = hungerChange + modChange[1](data) * modChange[2]
     end
     return hungerChange * Globals.gameWorldSecondsSinceLastUpdate
 end
