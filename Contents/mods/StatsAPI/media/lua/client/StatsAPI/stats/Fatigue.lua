@@ -49,7 +49,7 @@ Fatigue.updateFatigue = function(character, stats, asleep)
         if fatigue > 0 then
             local bedMultiplier = Fatigue.bedEfficiency[character:getBedType()] or 1
         
-            local fatigueDelta = 1 / Globals.gameTime:getMinutesPerDay() / 60 * Fatigue.multiplier / 2
+            local fatigueDelta = 1 / Globals.gameTime:getMinutesPerDay() / 60 * Globals.multiplier / 2
             local fatigueRate = Fatigue.getFatigueRate(character, true)
         
             local fatigueDecrease = 0
