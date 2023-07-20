@@ -1,15 +1,17 @@
 ---@class StatsData
----@field character IsoGameCharacter
----@field panicIncrease number
----@field panicReduction number
----@field oldNumZombiesVisible number
----@field forceWakeUp boolean
----@field forceWakeUpTime number
+---@field character IsoGameCharacter The character this StatsData belongs to
+---@field stats Stats The character's Stats object
+---@field panicIncrease number Multiplier on the character's panic increases
+---@field panicReduction number Multiplier on the character's panic reductions
+---@field oldNumZombiesVisible number The number of zombies the character could see on the previous frame
+---@field forceWakeUp boolean Forces the character to wake up on the next frame if true
+---@field forceWakeUpTime number Forces the character to wake up at this time if not nil
 local StatsData = {}
 StatsData.panicIncrease = 7
 StatsData.panicReduction = 0.06
 StatsData.oldNumZombiesVisible = 0
 StatsData.forceWakeUp = false
+StatsData.asleep = false
 
 StatsData.persistentStats = {forceWakeUpTime = true}
 ---@param self StatsData
@@ -39,6 +41,7 @@ StatsData.new = function(self, character)
     setmetatable(o, self)
     
     o.character = character
+    o.stats = character:getStats()
     
     local modData = character:getModData()
     modData.StatsAPI = modData.StatsAPI or {}

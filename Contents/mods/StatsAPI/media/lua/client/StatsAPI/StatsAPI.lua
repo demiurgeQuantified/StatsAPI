@@ -10,9 +10,10 @@ StatsAPI.Stress = require "StatsAPI/stats/Stress"
 StatsAPI.Panic = require "StatsAPI/stats/Panic"
 
 ---@param character IsoGameCharacter
----@param stats Stats
----@param asleep boolean
-StatsAPI.updateEndurance = function(character, stats, asleep)
+StatsAPI.updateEndurance = function(character)
+    local playerData = StatsData.getPlayerData(character)
+    local stats = playerData.stats
+    
     if character:isUnlimitedEndurance() then
         stats:setEndurance(1)
         return
@@ -20,7 +21,7 @@ StatsAPI.updateEndurance = function(character, stats, asleep)
     
     local endurance = stats:getEndurance()
     
-    if asleep then
+    if playerData.asleep then
         local enduranceMultiplier = 2
         if IsoPlayer.allPlayersAsleep() then
             enduranceMultiplier = enduranceMultiplier * Globals.deltaMinutesPerDay
@@ -32,26 +33,25 @@ StatsAPI.updateEndurance = function(character, stats, asleep)
 end
 
 ---@param character IsoPlayer
----@param stats Stats
-StatsAPI.updateFitness = function(character, stats)
-    stats:setFitness(character:getPerkLevel(Perks.Fitness) / 5 - 1)
+StatsAPI.updateFitness = function(character)
+    StatsData.getPlayerData(character).stats:setFitness(character:getPerkLevel(Perks.Fitness) / 5 - 1)
 end
 
 ---@param character IsoPlayer
 StatsAPI.CalculateStats = function(character)
-    local stats = character:getStats()
-    local asleep = character:isAsleep()
+    local playerData = StatsData.getPlayerData(character)
+    playerData.asleep = character:isAsleep()
     
-    StatsAPI.Stress.updateStress(character, stats, asleep)
-    StatsAPI.updateEndurance(character, stats, asleep)
-    StatsAPI.Thirst.updateThirst(character, stats, asleep)
-    StatsAPI.Fatigue.updateFatigue(character, stats, asleep)
-    StatsAPI.Hunger.updateHunger(character, stats, asleep)
-    StatsAPI.Panic.updatePanic(character, stats, asleep)
-    StatsAPI.updateFitness(character, stats)
+    StatsAPI.Stress.updateStress(character)
+    StatsAPI.updateEndurance(character)
+    StatsAPI.Thirst.updateThirst(character)
+    StatsAPI.Fatigue.updateFatigue(character)
+    StatsAPI.Hunger.updateHunger(character)
+    StatsAPI.Panic.updatePanic(character)
+    StatsAPI.updateFitness(character)
     
-    if asleep then
-        StatsAPI.Fatigue.updateSleep(character, stats)
+    if playerData.asleep then
+        StatsAPI.Fatigue.updateSleep(character)
     end
 end
 
@@ -136,7 +136,6 @@ end
 StatsAPI.removeStressChange = function(sourceName)
     StatsAPI.Stress.modChanges[sourceName] = nil
 end
-
 
 ---Prevents the vanilla trait effects from being added. Must be called before OnGameBoot or it will have no effect.
 StatsAPI.disableVanillaTraits = function()

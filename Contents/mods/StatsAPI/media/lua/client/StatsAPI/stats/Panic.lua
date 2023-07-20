@@ -54,35 +54,34 @@ Panic.getSurvivalReduction = function(character)
 end
 
 ---@param character IsoPlayer
----@param stats Stats
----@param asleep boolean
-Panic.updatePanic = function(character, stats, asleep)
+Panic.updatePanic = function(character)
     local statsData = StatsData.getPlayerData(character)
     
-    local visibleZombies = stats:getNumVisibleZombies()
+    local visibleZombies = statsData.stats:getNumVisibleZombies()
     local zombieChange = visibleZombies - statsData.oldNumZombiesVisible
     if zombieChange > 0 then
-        Panic.increasePanic(character, stats, zombieChange)
+        Panic.increasePanic(character, zombieChange)
     else
-        Panic.reducePanic(character, stats, asleep)
+        Panic.reducePanic(character)
     end
     
     statsData.oldNumZombiesVisible = visibleZombies
 end
 
 ---@param character IsoPlayer
----@param stats Stats
 ---@param zombies int
-Panic.increasePanic = function(character, stats, zombies)
-    local panicChange = StatsData.getPlayerData(character).panicIncrease * Panic.getPanicMultiplier(character) * zombies
+Panic.increasePanic = function(character, zombies)
+    local playerData = StatsData.getPlayerData(character)
+    local stats = playerData.stats
+    
+    local panicChange = playerData.panicIncrease * Panic.getPanicMultiplier(character) * zombies
     
     stats:setPanic(Math.min(stats:getPanic() + panicChange, 100))
 end
 
 ---@param character IsoPlayer
----@param stats Stats
----@param asleep boolean
-Panic.reducePanic = function(character, stats, asleep)
+Panic.reducePanic = function(character)
+    local stats = StatsData.getPlayerData(character).stats
     local panic = stats:getPanic()
     if panic > 0 then
         local panicReduction = StatsData.getPlayerData(character).panicReduction

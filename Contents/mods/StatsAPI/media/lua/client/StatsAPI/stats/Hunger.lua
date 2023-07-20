@@ -1,15 +1,15 @@
 local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 
+local StatsData = require "StatsAPI/StatsData"
+
 local Hunger = {}
 Hunger.appetiteMultipliers = {}
 
 ---@param character IsoGameCharacter
----@param stats Stats|nil
 ---@return number
-Hunger.getAppetiteMultiplier = function(character, stats)
-    stats = stats or character:getStats()
-    local appetite = 1 - stats:getHunger()
+Hunger.getAppetiteMultiplier = function(character)
+    local appetite = 1 - StatsData.getPlayerData(character).stats:getHunger()
     
     for trait, multiplier in pairs(Hunger.appetiteMultipliers) do
         if character:HasTrait(trait) then
@@ -21,14 +21,15 @@ Hunger.getAppetiteMultiplier = function(character, stats)
 end
 
 ---@param character IsoPlayer
----@param stats Stats
----@param asleep boolean
-Hunger.updateHunger = function(character, stats, asleep)
-    local appetiteMultiplier = Hunger.getAppetiteMultiplier(character, stats)
+Hunger.updateHunger = function(character)
+    local playerData = StatsData.getPlayerData(character)
+    local stats = playerData.stats
+    
+    local appetiteMultiplier = Hunger.getAppetiteMultiplier(character)
     local wellFed = character:getMoodleLevel(MoodleType.FoodEaten) ~= 0
     local hungerChange = 0
     
-    if not asleep then
+    if not playerData.asleep then
         if not (character:isRunning() or character:isPlayerMoving()) and not character:isCurrentState(SwipeStatePlayer.instance()) then
             if wellFed then
                 hungerChange = ZomboidGlobals.HungerIncreaseWhenWellFed

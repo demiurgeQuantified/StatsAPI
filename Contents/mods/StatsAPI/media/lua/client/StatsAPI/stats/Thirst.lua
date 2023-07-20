@@ -1,6 +1,8 @@
 local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 
+local StatsData = require "StatsAPI/StatsData"
+
 local Thirst = {}
 Thirst.thirstMultipliers = {}
 
@@ -18,12 +20,14 @@ Thirst.getThirstMultiplier = function(character)
 end
 
 ---@param character IsoPlayer
----@param stats Stats
-Thirst.updateThirst = function(character, stats, asleep)
+Thirst.updateThirst = function(character)
+    local playerData = StatsData.getPlayerData(character)
+    local stats = playerData.stats
+    
     if not character:isGhostMode() then
         local thirstMultiplier = Thirst.getThirstMultiplier(character) * Globals.statsDecreaseMultiplier * Globals.delta
         local thirst = stats:getThirst()
-        if not asleep then
+        if not playerData.asleep then
             if character:isRunning() then
                 thirstMultiplier = thirstMultiplier * 1.2
             end

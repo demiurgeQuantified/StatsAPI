@@ -11,10 +11,9 @@ Fatigue.fatigueRate = {awake = {}, asleep = {}}
 Fatigue.sleepEfficiency = {}
 
 ---@param character IsoGameCharacter
----@param asleep boolean
 ---@return number
-Fatigue.getFatigueRate = function(character, asleep)
-    local fatigueRates = asleep and Fatigue.fatigueRate.asleep or Fatigue.fatigueRate.awake
+Fatigue.getFatigueRate = function(character)
+    local fatigueRates = StatsData.getPlayerData(character) and Fatigue.fatigueRate.asleep or Fatigue.fatigueRate.awake
     
     local fatigueRate = 1
     for trait, multiplier in pairs(fatigueRates) do
@@ -41,16 +40,17 @@ Fatigue.getSleepEfficiency = function(character)
 end
 
 ---@param character IsoPlayer
----@param stats Stats
----@param asleep boolean
-Fatigue.updateFatigue = function(character, stats, asleep)
-    if asleep then
+Fatigue.updateFatigue = function(character)
+    local playerData = StatsData.getPlayerData(character)
+    local stats = playerData.stats
+    
+    if playerData.asleep then
         local fatigue = stats:getFatigue()
         if fatigue > 0 then
             local bedMultiplier = Fatigue.bedEfficiency[character:getBedType()] or 1
         
             local fatigueDelta = 1 / Globals.gameTime:getMinutesPerDay() / 60 * Globals.multiplier / 2
-            local fatigueRate = Fatigue.getFatigueRate(character, true)
+            local fatigueRate = Fatigue.getFatigueRate(character)
         
             local fatigueDecrease = 0
             if fatigue <= 0.3 then
