@@ -1,7 +1,6 @@
 local Math = require "StatsAPI/lib/Math"
 
 local Globals = require "StatsAPI/Globals"
-local CharacterStats = require "StatsAPI/CharacterStats"
 local Panic = {}
 
 Panic.traitMultipliers = {}
@@ -82,27 +81,16 @@ Panic.reducePanic = function(self)
     end
 end
 
+-- these will get overwritten by CharacterStats, so we need to cache the original values now
 local bodyDamage = __classmetatables[BodyDamage.class].__index
-local old_setPanicIncreaseValue = bodyDamage.setPanicIncreaseValue
-local old_setPanicReductionValue = bodyDamage.setPanicReductionValue
+local setPanicIncreaseValue = bodyDamage.setPanicIncreaseValue
+local setPanicDecreaseValue = bodyDamage.setPanicReductionValue
 
 ---@param player IsoPlayer
 Panic.disableVanillaPanic = function(player)
     local bodyDamage = player:getBodyDamage()
-    old_setPanicIncreaseValue(bodyDamage, 0)
-    old_setPanicReductionValue(bodyDamage, 0)
-end
-
----@param self BodyDamage
----@param PanicIncreaseValue number
-bodyDamage.setPanicIncreaseValue = function(self, PanicIncreaseValue)
-    CharacterStats.getOrCreate(self:getParentChar()).panicIncrease = PanicIncreaseValue
-end
-
----@param self BodyDamage
----@param PanicReductionValue number
-bodyDamage.setPanicReductionValue = function(self, PanicReductionValue)
-    CharacterStats.getOrCreate(self:getParentChar()).panicReduction = PanicReductionValue
+    setPanicIncreaseValue(bodyDamage, 0)
+    setPanicDecreaseValue(bodyDamage, 0)
 end
 
 return Panic

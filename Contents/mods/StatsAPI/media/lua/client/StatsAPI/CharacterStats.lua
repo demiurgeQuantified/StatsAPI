@@ -129,4 +129,41 @@ CharacterStats.get = function(character)
     return CharacterDataMap[character]
 end
 
+local isoPlayer = __classmetatables[IsoPlayer.class].__index
+
+---@type fun(self:IsoGameCharacter, ForceWakeUpTime:float)
+local old_setForceWakeUpTime = isoPlayer.setForceWakeUpTime
+---@param self IsoGameCharacter
+---@param ForceWakeUpTime float
+isoPlayer.setForceWakeUpTime = function(self, ForceWakeUpTime)
+    CharacterStats.getOrCreate(self).forceWakeUpTime = ForceWakeUpTime
+    old_setForceWakeUpTime(self, ForceWakeUpTime)
+end
+
+---@type fun(self:IsoGameCharacter)
+local old_forceAwake = isoPlayer.forceAwake
+---@param self IsoGameCharacter
+isoPlayer.forceAwake = function(self)
+    if self:isAsleep() then
+        CharacterStats.getOrCreate(self).forceWakeUp = true
+    end
+    old_forceAwake(self)
+end
+
+local bodyDamage = __classmetatables[BodyDamage.class].__index
+local old_setPanicIncreaseValue = bodyDamage.setPanicIncreaseValue
+local old_setPanicReductionValue = bodyDamage.setPanicReductionValue
+
+---@param self BodyDamage
+---@param PanicIncreaseValue number
+bodyDamage.setPanicIncreaseValue = function(self, PanicIncreaseValue)
+    CharacterStats.getOrCreate(self:getParentChar()).panicIncrease = PanicIncreaseValue
+end
+
+---@param self BodyDamage
+---@param PanicReductionValue number
+bodyDamage.setPanicReductionValue = function(self, PanicReductionValue)
+    CharacterStats.getOrCreate(self:getParentChar()).panicReduction = PanicReductionValue
+end
+
 return CharacterStats

@@ -2,7 +2,6 @@ local Math = require "StatsAPI/lib/Math"
 local bClient = isClient()
 
 local Globals = require "StatsAPI/Globals"
-local CharacterStats = require "StatsAPI/CharacterStats"
 local Fatigue = {}
 
 
@@ -104,27 +103,6 @@ Fatigue.updateSleep = function(self)
         end
         -- this.dirtyRecalcGridStackTime = 20.0F; can't really be reimplemented, hope it's not important
     end
-end
-
-local isoGameCharacter = __classmetatables[IsoGameCharacter.class].__index
-
----@type fun(self:IsoGameCharacter, ForceWakeUpTime:float)
-local old_setForceWakeUpTime = isoGameCharacter.setForceWakeUpTime
----@param self IsoGameCharacter
----@param ForceWakeUpTime float
-isoGameCharacter.setForceWakeUpTime = function(self, ForceWakeUpTime)
-    CharacterStats.getOrCreate(self).forceWakeUpTime = ForceWakeUpTime
-    old_setForceWakeUpTime(self, ForceWakeUpTime)
-end
-
----@type fun(self:IsoGameCharacter)
-local old_forceAwake = isoGameCharacter.forceAwake
----@param self IsoGameCharacter
-isoGameCharacter.forceAwake = function(self)
-    if self:isAsleep() then
-        CharacterStats.getOrCreate(self).forceWakeUp = true
-    end
-    old_forceAwake(self)
 end
 
 return Fatigue
