@@ -1,6 +1,4 @@
-local Math = require "StatsAPI/lib/Math"
-local Globals = require "StatsAPI/Globals"
-local StatsData = require "StatsAPI/StatsData"
+local CharacterStats = require "StatsAPI/CharacterStats"
 
 local StatsAPI = {}
 StatsAPI.Fatigue = require "StatsAPI/stats/Fatigue"
@@ -9,50 +7,9 @@ StatsAPI.Thirst = require "StatsAPI/stats/Thirst"
 StatsAPI.Stress = require "StatsAPI/stats/Stress"
 StatsAPI.Panic = require "StatsAPI/stats/Panic"
 
----@param character IsoGameCharacter
-StatsAPI.updateEndurance = function(character)
-    local playerData = StatsData.getPlayerData(character)
-    local stats = playerData.stats
-    
-    if character:isUnlimitedEndurance() then
-        stats:setEndurance(1)
-        return
-    end
-    
-    local endurance = stats:getEndurance()
-    
-    if playerData.asleep then
-        local enduranceMultiplier = 2
-        if IsoPlayer.allPlayersAsleep() then
-            enduranceMultiplier = enduranceMultiplier * Globals.deltaMinutesPerDay
-        end
-        endurance = endurance + ZomboidGlobals.ImobileEnduranceIncrease * Globals.sandboxOptions:getEnduranceRegenMultiplier() * character:getRecoveryMod() * Globals.multiplier * enduranceMultiplier
-    end
-    
-    stats:setEndurance(Math.clamp(endurance, 0, 1))
-end
-
----@param character IsoPlayer
-StatsAPI.updateFitness = function(character)
-    StatsData.getPlayerData(character).stats:setFitness(character:getPerkLevel(Perks.Fitness) / 5 - 1)
-end
-
 ---@param character IsoPlayer
 StatsAPI.CalculateStats = function(character)
-    local playerData = StatsData.getPlayerData(character)
-    playerData.asleep = character:isAsleep()
-    
-    StatsAPI.Stress.updateStress(character)
-    StatsAPI.updateEndurance(character)
-    StatsAPI.Thirst.updateThirst(character)
-    StatsAPI.Fatigue.updateFatigue(character)
-    StatsAPI.Hunger.updateHunger(character)
-    StatsAPI.Panic.updatePanic(character)
-    StatsAPI.updateFitness(character)
-    
-    if playerData.asleep then
-        StatsAPI.Fatigue.updateSleep(character)
-    end
+    CharacterStats.getOrCreate(character):CalculateStats()
 end
 
 Hook.CalculateStats.Add(StatsAPI.CalculateStats)
@@ -60,7 +17,6 @@ Hook.CalculateStats.Add(StatsAPI.CalculateStats)
 ---@param playerIndex int
 ---@param player IsoPlayer
 StatsAPI.preparePlayer = function(playerIndex, player)
-    StatsData.createPlayerData(player)
     StatsAPI.Panic.disableVanillaPanic(player)
 end
 
@@ -141,6 +97,21 @@ end
 StatsAPI.disableVanillaTraits = function()
     local Vanilla = require "StatsAPI/vanilla/VanillaTraits"
     Vanilla.wantVanilla = false
+end
+
+---Returns the CharacterStats object for a character
+---@param character IsoGameCharacter
+---@return CharacterStats|nil
+StatsAPI.getCharacterStats = function(character)
+    return CharacterStats.get(character)
+end
+
+---Returns the CharacterStats object for the local player index
+---@param playerNum int
+---@return CharacterStats|nil
+StatsAPI.getPlayerStats = function(playerNum)
+    local player = getSpecificPlayer(playerNum)
+    return CharacterStats.get(player)
 end
 
 return StatsAPI

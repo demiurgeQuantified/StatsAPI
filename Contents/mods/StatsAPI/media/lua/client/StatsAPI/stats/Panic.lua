@@ -1,7 +1,7 @@
 local Math = require "StatsAPI/lib/Math"
 
 local Globals = require "StatsAPI/Globals"
-local StatsData = require "StatsAPI/StatsData"
+local CharacterStats = require "StatsAPI/CharacterStats"
 local Panic = {}
 
 Panic.traitMultipliers = {}
@@ -35,61 +35,50 @@ Panic.getTraitMultiplier = function(character)
     return panicMultiplier
 end
 
-Panic.getPanicReductionModifier = function(character, asleep)
-    local modifier = 1
-    
-    if asleep then
-        modifier = 2
-    end
-    
-    return modifier
+---@param stats CharacterStats
+Panic.getPanicReductionModifier = function(stats)
+    return stats.asleep and 2 or 1
 end
 
----@param character IsoPlayer
+---@param stats CharacterStats
 ---@return number
-Panic.getSurvivalReduction = function(character)
-    local panicReduction = StatsData.getPlayerData(character).panicReduction
+Panic.getSurvivalReduction = function(stats)
+    local panicReduction = stats.panicReduction
     local monthsSurvived = Math.floor(Globals.gameTime:getNightsSurvived() / 30)
     return panicReduction * Math.min(monthsSurvived, 5)
 end
 
----@param character IsoPlayer
-Panic.updatePanic = function(character)
-    local statsData = StatsData.getPlayerData(character)
-    
-    local visibleZombies = statsData.stats:getNumVisibleZombies()
-    local zombieChange = visibleZombies - statsData.oldNumZombiesVisible
+---@param self CharacterStats
+Panic.updatePanic = function(self)
+    local visibleZombies = self.javaStats:getNumVisibleZombies()
+    local zombieChange = visibleZombies - self.oldNumZombiesVisible
     if zombieChange > 0 then
-        Panic.increasePanic(character, zombieChange)
+        Panic.increasePanic(self, zombieChange)
     else
-        Panic.reducePanic(character)
+        Panic.reducePanic(self)
     end
     
-    statsData.oldNumZombiesVisible = visibleZombies
+    self.oldNumZombiesVisible = visibleZombies
 end
 
----@param character IsoPlayer
+---@param self CharacterStats
 ---@param zombies int
-Panic.increasePanic = function(character, zombies)
-    local playerData = StatsData.getPlayerData(character)
-    local stats = playerData.stats
+Panic.increasePanic = function(self, zombies)
+    local panicChange = self.panicIncrease * Panic.getPanicMultiplier(self.character) * zombies
     
-    local panicChange = playerData.panicIncrease * Panic.getPanicMultiplier(character) * zombies
-    
-    stats:setPanic(Math.min(stats:getPanic() + panicChange, 100))
+    self.javaStats:setPanic(Math.min(self.javaStats:getPanic() + panicChange, 100))
 end
 
----@param character IsoPlayer
-Panic.reducePanic = function(character)
-    local stats = StatsData.getPlayerData(character).stats
-    local panic = stats:getPanic()
+---@param self CharacterStats
+Panic.reducePanic = function(self)
+    local panic = self.javaStats:getPanic()
     if panic > 0 then
-        local panicReduction = StatsData.getPlayerData(character).panicReduction
+        local panicReduction = self.panicReduction
         
-        local panicChange = panicReduction * Globals.multiplier / 1.6 + Panic.getSurvivalReduction(character)
-        panicChange = panicChange * Panic.getPanicReductionModifier(character)
+        local panicChange = panicReduction * Globals.multiplier / 1.6 + Panic.getSurvivalReduction(self)
+        panicChange = panicChange * Panic.getPanicReductionModifier(self)
     
-        stats:setPanic(Math.max(panic - panicChange, 0))
+        self.javaStats:setPanic(Math.max(panic - panicChange, 0))
     end
 end
 
@@ -107,13 +96,13 @@ end
 ---@param self BodyDamage
 ---@param PanicIncreaseValue number
 bodyDamage.setPanicIncreaseValue = function(self, PanicIncreaseValue)
-    StatsData.getPlayerData(self:getParentChar()).panicIncrease = PanicIncreaseValue
+    CharacterStats.getOrCreate(self:getParentChar()).panicIncrease = PanicIncreaseValue
 end
 
 ---@param self BodyDamage
 ---@param PanicReductionValue number
 bodyDamage.setPanicReductionValue = function(self, PanicReductionValue)
-    StatsData.getPlayerData(self:getParentChar()).panicReduction = PanicReductionValue
+    CharacterStats.getOrCreate(self:getParentChar()).panicReduction = PanicReductionValue
 end
 
 return Panic

@@ -1,8 +1,6 @@
 local Globals = require "StatsAPI/Globals"
 local Math = require "StatsAPI/lib/Math"
 
-local StatsData = require "StatsAPI/StatsData"
-
 local Stress = {}
 
 Stress.injuryStress = true
@@ -55,20 +53,18 @@ Stress.getModdedStressChange = function()
     return stressChange * Globals.gameWorldSecondsSinceLastUpdate
 end
 
----@param character IsoPlayer
-Stress.updateStress = function(character)
-    local playerData = StatsData.getPlayerData(character)
-    local stats = playerData.stats
-    local stress = stats:getStress()
-    stress = stress + worldSoundManager:getStressFromSounds(character:getX(), character:getY(), character:getZ()) * ZomboidGlobals.StressFromSoundsMultiplier
-    stress = stress + Stress.getHealthStress(character)
-    stress = stress + Stress.getTraitStress(character)
+---@param self CharacterStats
+Stress.updateStress = function(self)
+    local stress = self.javaStats:getStress()
+    stress = stress + worldSoundManager:getStressFromSounds(self.character:getX(), self.character:getY(), self.character:getZ()) * ZomboidGlobals.StressFromSoundsMultiplier
+    stress = stress + Stress.getHealthStress(self.character)
+    stress = stress + Stress.getTraitStress(self.character)
     stress = stress + Stress.getModdedStressChange()
-    if not playerData.asleep then
+    if not self.asleep then
         stress = stress - ZomboidGlobals.StressDecrease * Globals.delta
     end
     
-    stats:setStress(Math.clamp(stress, 0, 1))
+    self.javaStats:setStress(Math.clamp(stress, 0, 1))
 end
 
 return Stress

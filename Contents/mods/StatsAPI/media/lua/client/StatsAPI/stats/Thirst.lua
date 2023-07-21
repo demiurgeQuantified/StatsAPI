@@ -1,8 +1,6 @@
 local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 
-local StatsData = require "StatsAPI/StatsData"
-
 local Thirst = {}
 Thirst.thirstMultipliers = {}
 
@@ -19,25 +17,22 @@ Thirst.getThirstMultiplier = function(character)
     return thirstMultiplier
 end
 
----@param character IsoPlayer
-Thirst.updateThirst = function(character)
-    local playerData = StatsData.getPlayerData(character)
-    local stats = playerData.stats
-    
-    if not character:isGhostMode() then
-        local thirstMultiplier = Thirst.getThirstMultiplier(character) * Globals.statsDecreaseMultiplier * Globals.delta
-        local thirst = stats:getThirst()
-        if not playerData.asleep then
-            if character:isRunning() then
+---@param self CharacterStats
+Thirst.updateThirst = function(self)
+    if not self.character:isGhostMode() then
+        local thirstMultiplier = Thirst.getThirstMultiplier(self.character) * Globals.statsDecreaseMultiplier * Globals.delta
+        local thirst = self.javaStats:getThirst()
+        if not self.asleep then
+            if self.character:isRunning() then
                 thirstMultiplier = thirstMultiplier * 1.2
             end
-            thirst = thirst + ZomboidGlobals.ThirstIncrease * character:getThirstMultiplier() * thirstMultiplier
+            thirst = thirst + ZomboidGlobals.ThirstIncrease * self.character:getThirstMultiplier() * thirstMultiplier
         else
             thirst = thirst + ZomboidGlobals.ThirstSleepingIncrease * thirstMultiplier
         end
-        stats:setThirst(Math.min(thirst, 1))
+        self.javaStats:setThirst(Math.min(thirst, 1))
     end
-    character:autoDrink()
+    self.character:autoDrink()
 end
 
 return Thirst

@@ -1,18 +1,16 @@
 local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 
-local StatsData = require "StatsAPI/StatsData"
-
 local Hunger = {}
 Hunger.appetiteMultipliers = {}
 
----@param character IsoGameCharacter
+---@param stats CharacterStats
 ---@return number
-Hunger.getAppetiteMultiplier = function(character)
-    local appetite = 1 - StatsData.getPlayerData(character).stats:getHunger()
+Hunger.getAppetiteMultiplier = function(stats)
+    local appetite = 1 - stats.javaStats:getHunger()
     
     for trait, multiplier in pairs(Hunger.appetiteMultipliers) do
-        if character:HasTrait(trait) then
+        if stats.character:HasTrait(trait) then
             appetite = appetite * multiplier
         end
     end
@@ -20,17 +18,14 @@ Hunger.getAppetiteMultiplier = function(character)
     return appetite
 end
 
----@param character IsoPlayer
-Hunger.updateHunger = function(character)
-    local playerData = StatsData.getPlayerData(character)
-    local stats = playerData.stats
-    
-    local appetiteMultiplier = Hunger.getAppetiteMultiplier(character)
-    local wellFed = character:getMoodleLevel(MoodleType.FoodEaten) ~= 0
+---@param self CharacterStats
+Hunger.updateHunger = function(self)
+    local appetiteMultiplier = Hunger.getAppetiteMultiplier(self)
+    local wellFed = self.character:getMoodleLevel(MoodleType.FoodEaten) ~= 0
     local hungerChange = 0
     
-    if not playerData.asleep then
-        if not (character:isRunning() or character:isPlayerMoving()) and not character:isCurrentState(SwipeStatePlayer.instance()) then
+    if not self.asleep then
+        if not (self.character:isRunning() or self.character:isPlayerMoving()) and not self.character:isCurrentState(SwipeStatePlayer.instance()) then
             if wellFed then
                 hungerChange = ZomboidGlobals.HungerIncreaseWhenWellFed
             else
@@ -41,9 +36,9 @@ Hunger.updateHunger = function(character)
         else
             hungerChange = ZomboidGlobals.HungerIncreaseWhenExercise * appetiteMultiplier
         end
-        hungerChange = hungerChange * Globals.statsDecreaseMultiplier * character:getHungerMultiplier() * Globals.delta
+        hungerChange = hungerChange * Globals.statsDecreaseMultiplier * self.character:getHungerMultiplier() * Globals.delta
     else
-        hungerChange = ZomboidGlobals.HungerIncreaseWhileAsleep * Globals.statsDecreaseMultiplier * character:getHungerMultiplier() * Globals.delta
+        hungerChange = ZomboidGlobals.HungerIncreaseWhileAsleep * Globals.statsDecreaseMultiplier * self.character:getHungerMultiplier() * Globals.delta
         if wellFed then
             hungerChange = hungerChange * appetiteMultiplier
         else
@@ -53,7 +48,7 @@ Hunger.updateHunger = function(character)
         end
     end
     
-    stats:setHunger(Math.min(stats:getHunger() + hungerChange, 1))
+    self.javaStats:setHunger(Math.min(self.javaStats:getHunger() + hungerChange, 1))
 end
 
 return Hunger
