@@ -28,7 +28,7 @@ Events.OnCreatePlayer.Add(StatsAPI.preparePlayer)
 ---@param awakeModifier number|nil The fatigue multiplier to give characters with the trait while they are awake
 ---@param asleepModifier number|nil The fatigue multiplier to give characters with the trait while they are asleep
 StatsAPI.addTraitFatigueModifier = function(trait, awakeModifier, asleepModifier)
-    StatsAPI.Fatigue.fatigueRate.asleep[trait] = awakeModifier
+    StatsAPI.Fatigue.fatigueRate.awake[trait] = awakeModifier
     StatsAPI.Fatigue.fatigueRate.asleep[trait] = asleepModifier
 end
 
