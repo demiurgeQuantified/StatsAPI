@@ -28,4 +28,9 @@ Events.OnGameTimeLoaded.Add(function()
     Globals.deltaMinutesPerDay = Globals.gameTime:getDeltaMinutesPerDay()
 end)
 
+---@class StatIdentifier : int
+---@type table<string, StatIdentifier>
+Globals.Stats = {}
+Globals.Stats.Stress = 0
+
 return Globals

@@ -1,5 +1,4 @@
 ---@class OverTimeEffect
----@field startTime int
----@field duration int
----@field amount number
----@field stat string
+---@field timeRemaining number The game time length the effect should remain active
+---@field amount number The amount the effect the stat should increase by per second
+---@field stat string String name of the stat this effect changes

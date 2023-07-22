@@ -8,6 +8,8 @@ StatsAPI.Thirst = require "StatsAPI/stats/Thirst"
 StatsAPI.Stress = require "StatsAPI/stats/Stress"
 StatsAPI.Panic = require "StatsAPI/stats/Panic"
 
+StatsAPI.Stats = require "StatsAPI/Globals".Stats
+
 ---@param character IsoPlayer
 StatsAPI.CalculateStats = function(character)
     CharacterStats.getOrCreate(character):CalculateStats()
@@ -67,16 +69,42 @@ StatsAPI.addTraitPanicModifier = function(trait, modifier)
 end
 
 
---TODO: add a bunch of these for different time formats
----@param character IsoGameCharacter
----@param stat string
----@param total number
----@param time number
-StatsAPI.addStatOverTime = function(character, stat, total, time)
-    local effect = OverTimeEffects.create(character, stat, total / time, time)
-    if not effect then
-        error("StatsAPI: Attempted to create OverTimeEffect for unknown stat " .. tostring(stat), 2)
-    end
+---Adds an amount of a stat to a character over the specified time in seconds.
+---@param character IsoGameCharacter The character to apply the effect to
+---@param stat StatIdentifier The stat to add to
+---@param total number The total amount of the stat to add
+---@param time number The time in seconds it should take to complete the effect
+StatsAPI.addOverTimeEffect = function(character, stat, total, time)
+    time = time * 24 -- not 48 because the default delta is half
+    OverTimeEffects.create(CharacterStats.get(character), stat, total / time, time)
+end
+
+---Adds an amount of a stat to a character over the specified time in hours.
+---@param character IsoGameCharacter The character to apply the effect to
+---@param stat StatIdentifier The stat to add to
+---@param total number The total amount of the stat to add
+---@param time number The time in seconds it should take to complete the effect
+StatsAPI.addOverTimeEffectHours = function(character, stat, total, time)
+    StatsAPI.addOverTimeEffect(character, stat, total, time * 3600)
+end
+
+---Adds a constant amount of the stat to the character for the duration in seconds.
+---@param character IsoGameCharacter The character to apply the effect to
+---@param stat StatIdentifier The stat to add to
+---@param amount number The amount of the stat to add every second
+---@param duration number The number of seconds the effect should be active
+StatsAPI.addConstantEffect = function(character, stat, amount, duration)
+    duration = duration * 24
+    OverTimeEffects.create(CharacterStats.get(character), stat, amount / 24, duration)
+end
+
+---Adds a constant amount of the stat to the character for the duration in hours.
+---@param character IsoGameCharacter The character to apply the effect to
+---@param stat StatIdentifier The stat to add to
+---@param amount number The amount of the stat to add every hour
+---@param duration number The number of hours the effect should be active
+StatsAPI.addConstantEffectHours = function(character, stat, amount, duration)
+    StatsAPI.addConstantEffect(character, stat, amount / 3600, duration * 3600)
 end
 
 

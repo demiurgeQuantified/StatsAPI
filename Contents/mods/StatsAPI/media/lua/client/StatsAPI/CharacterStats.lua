@@ -6,11 +6,12 @@ local Hunger = require "StatsAPI/stats/Hunger"
 local Panic = require "StatsAPI/stats/Panic"
 local Stress = require "StatsAPI/stats/Stress"
 local Fatigue = require "StatsAPI/stats/Fatigue"
+local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 
 -- TODO: character trait modifiers should be cached here, as they don't change very often
 
+-- TODO: caching all the stats like this would be future proof, as we'll likely need it for performance later on
 ---@class CharacterStats
---TODO: caching all the stats like this would be future proof, as we'll likely need it for performance later on
 ---@field fatigue number The character's fatigue at the end of the last stats calculation
 ---@field character IsoGameCharacter The character this StatsData belongs to
 ---@field playerNum int The character's playerNum
@@ -22,6 +23,7 @@ local Fatigue = require "StatsAPI/stats/Fatigue"
 ---@field forceWakeUp boolean Forces the character to wake up on the next frame if true
 ---@field forceWakeUpTime number Forces the character to wake up at this time if not nil
 ---@field insideVehicle boolean Is the character in a vehicle?
+---@field overTimeEffects table<int, OverTimeEffect> The character's active OverTimeEffects
 local CharacterStats = {}
 CharacterStats.panicIncrease = 7
 CharacterStats.panicReduction = 0.06
@@ -29,7 +31,7 @@ CharacterStats.oldNumZombiesVisible = 0
 CharacterStats.forceWakeUp = false
 CharacterStats.asleep = false
 
-CharacterStats.persistentStats = {forceWakeUpTime = true}
+CharacterStats.persistentStats = {forceWakeUpTime = true, overTimeEffects = true}
 ---@param self CharacterStats
 ---@param key any
 CharacterStats.__index = function(self, key)
@@ -65,6 +67,8 @@ CharacterStats.new = function(self, character)
     modData.StatsAPI = modData.StatsAPI or {}
     modData.StatsAPI.StatsData = modData.StatsAPI.StatsData or {}
     o.modData = modData.StatsAPI.StatsData
+    
+    o.modData.overTimeEffects = o.modData.overTimeEffects or {}
     
     return o
 end
@@ -117,18 +121,34 @@ CharacterStats.CalculateStats = function(self)
     if self.asleep then
         self:updateSleep()
     end
+    
+    self:applyOverTimeEffects()
+end
+
+---@param self CharacterStats
+CharacterStats.applyOverTimeEffects = function(self)
+    for j = 1, #self.overTimeEffects do
+        local effect = self.overTimeEffects[j]
+        local delta = Globals.delta
+        effect.timeRemaining = effect.timeRemaining - delta
+        if effect.timeRemaining <= 0 then
+            table.remove(self.overTimeEffects, j)
+            delta = delta + effect.timeRemaining
+        end
+        OverTimeEffects.statSetters[effect.stat](self, effect.amount * delta)
+    end
 end
 
 ---@type table<IsoGameCharacter, CharacterStats>
-local CharacterDataMap = {}
+local CharacterStatsMap = {}
 
 ---@param character IsoGameCharacter
 ---@return CharacterStats
 CharacterStats.getOrCreate = function(character)
-    local data = CharacterDataMap[character]
+    local data = CharacterStatsMap[character]
     if not data then
         data = CharacterStats:new(character)
-        CharacterDataMap[character] = data
+        CharacterStatsMap[character] = data
     end
     return data
 end
@@ -136,7 +156,7 @@ end
 ---@param character IsoGameCharacter
 ---@return CharacterStats|nil
 CharacterStats.get = function(character)
-    return CharacterDataMap[character]
+    return CharacterStatsMap[character]
 end
 
 
