@@ -20,6 +20,10 @@ Vanilla.addTraitModifiers = function()
         StatsAPI.addTraitFatigueModifier("NeedsLessSleep", 0.7, 0.75)
         StatsAPI.addTraitFatigueModifier("NeedsMoreSleep", 1.3, 1.18)
         
+        StatsAPI.addTraitSleepDurationModifier("Insomniac", 0.5)
+        StatsAPI.addTraitSleepDurationModifier("NeedsLessSleep", 0.75)
+        StatsAPI.addTraitSleepDurationModifier("NeedsMoreSleep", 1.18)
+        
         StatsAPI.addTraitSleepModifier("NightOwl", 1.4)
         StatsAPI.addTraitSleepModifier("Insomniac", 0.5)
         

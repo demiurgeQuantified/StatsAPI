@@ -8,6 +8,7 @@ local Fatigue = {}
 Fatigue.bedEfficiency = {goodBed = 1.1, badBed = 0.9, floor = 0.6}
 Fatigue.fatigueRate = {awake = {}, asleep = {}}
 Fatigue.sleepEfficiency = {}
+Fatigue.sleepLength = {}
 
 ---@param stats CharacterStats
 ---@return number
@@ -36,6 +37,50 @@ Fatigue.getSleepEfficiency = function(character)
     end
     
     return sleepEfficiency
+end
+
+---@param self CharacterStats
+---@param bedType string
+---@return number
+Fatigue.getSleepDuration = function(self, bedType)
+    -- TODO: cache fatigue when it's updated
+    local fatigue = self.javaStats:getFatigue()
+    local sleepLength = ZombRand(fatigue * 10, fatigue * 13) + 1;
+    
+    if bedType == "goodBed" then
+        sleepLength = sleepLength -1;
+    elseif bedType == "badBed" then
+        sleepLength = sleepLength +1;
+    elseif bedType == "floor" then
+        sleepLength = sleepLength * 0.7;
+    end
+    
+    for trait, multiplier in pairs(Fatigue.sleepLength) do
+        if self.character:HasTrait(trait) then
+            sleepLength = sleepLength * multiplier
+        end
+    end
+    
+    sleepLength = Math.clamp(sleepLength, 3, 16)
+    
+    return sleepLength
+end
+
+---@param character IsoGameCharacter
+---@param bed IsoObject|nil
+---@return string
+Fatigue.getBedType = function(character, bed)
+    local bedType = "badBed";
+    
+    if bed then
+        bedType = bed:getProperties():Val("BedType") or "averageBed";
+    elseif character:getVehicle() then
+        bedType = "averageBed";
+    else
+        bedType = "floor";
+    end
+    
+    return bedType
 end
 
 ---@param self CharacterStats
@@ -102,6 +147,62 @@ Fatigue.updateSleep = function(self)
             self.character:setIgnoreMovement(false)
         end
         -- this.dirtyRecalcGridStackTime = 20.0F; can't really be reimplemented, hope it's not important
+    end
+end
+
+---@param self CharacterStats
+---@param bed IsoObject|nil
+Fatigue.trySleep = function(self, bed)
+    local zombiesNearby = self.oldNumZombiesVisible > 0 or self.javaStats:getNumChasingZombies() > 0 or self.javaStats:getNumVeryCloseZombies() > 0
+    if zombiesNearby then
+        self.character:Say(getText("IGUI_Sleep_NotSafe"))
+        return
+    end
+    
+    if self.character:getSleepingTabletEffect() < 2000 then
+        if self.moodles:getMoodleLevel(MoodleType.Pain) >= 2 and self.javaStats:getFatigue() <= 0.85 then
+            self.character:Say(getText("ContextMenu_PainNoSleep"))
+            return
+        end
+        if self.moodles:getMoodleLevel(MoodleType.Panic) >= 1 then
+            self.character:Say(getText("ContextMenu_PanicNoSleep"))
+            return
+        end
+    end
+    
+    if (self.character:getVariableBoolean("ExerciseEnded") == false) then
+        return
+    end
+    
+    ISTimedActionQueue.clear(self.character)
+    local bedType = Fatigue.getBedType(self, bed)
+    
+    if bClient and getServerOptions():getBoolean("SleepAllowed") then
+        self.character:setAsleepTime(0.0)
+        self.character:setAsleep(true)
+        UIManager.setFadeBeforeUI(self.playerNum, true)
+        UIManager.FadeOut(self.playerNum, 1)
+        return
+    end
+    
+    self.character:setBed(bed);
+    self.character:setBedType(bedType);
+    
+    local sleepFor = Fatigue.getSleepDuration(self, bedType)
+    
+    local sleepHours = (sleepFor + Globals.gameTime:getTimeOfDay()) % 24
+    
+    self.character:setForceWakeUpTime(sleepHours)
+    self.character:setAsleepTime(0.0)
+    self.character:setAsleep(true)
+    getSleepingEvent():setPlayerFallAsleep(self.character, sleepFor);
+    
+    UIManager.setFadeBeforeUI(self.playerNum, true)
+    UIManager.FadeOut(self.playerNum, 1)
+    
+    if IsoPlayer.allPlayersAsleep() then
+        UIManager.getSpeedControls():SetCurrentGameSpeed(3)
+        save(true)
     end
 end
 

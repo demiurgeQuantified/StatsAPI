@@ -39,6 +39,11 @@ StatsAPI.addTraitSleepModifier = function(trait, modifier)
     StatsAPI.Fatigue.sleepEfficiency[trait] = modifier
 end
 
+---Adds a sleep duration multiplier to apply to characters who have the given trait.
+StatsAPI.addTraitSleepDurationModifier = function(trait, modifier)
+    StatsAPI.Fatigue.sleepLength[trait] = modifier
+end
+
 ---Adds a hunger multiplier to apply to characters who have the given trait.
 ---@param trait string The ID of the trait
 ---@param modifier number The hunger multiplier to give characters with the trait
