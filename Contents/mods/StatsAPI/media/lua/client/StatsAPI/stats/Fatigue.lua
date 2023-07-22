@@ -43,9 +43,7 @@ end
 ---@param bedType string
 ---@return number
 Fatigue.getSleepDuration = function(self, bedType)
-    -- TODO: cache fatigue when it's updated
-    local fatigue = self.javaStats:getFatigue()
-    local sleepLength = ZombRand(fatigue * 10, fatigue * 13) + 1;
+    local sleepLength = ZombRand(self.fatigue * 10, self.fatigue * 13) + 1;
     
     if bedType == "goodBed" then
         sleepLength = sleepLength -1;
@@ -85,8 +83,8 @@ end
 
 ---@param self CharacterStats
 Fatigue.updateFatigue = function(self)
+    local fatigue = self.javaStats:getFatigue()
     if self.asleep then
-        local fatigue = self.javaStats:getFatigue()
         if fatigue > 0 then
             local bedMultiplier = Fatigue.bedEfficiency[self.character:getBedType()] or 1
         
@@ -100,15 +98,19 @@ Fatigue.updateFatigue = function(self)
                 fatigueDecrease = fatigueDelta / (fatigueRate * 5) * 0.7
             end
             fatigueDecrease = fatigueDecrease * Fatigue.getSleepEfficiency(self.character) * bedMultiplier
-            self.javaStats:setFatigue(Math.max(fatigue - fatigueDecrease, 0))
+            self.fatigue = Math.max(fatigue - fatigueDecrease, 0)
+        else
+            self.fatigue = fatigue
+            return
         end
     else
         local tirednessRate = Fatigue.getFatigueRate(self)
         local enduranceMultiplier = Math.max(1 - self.javaStats:getEndurance(), 0.3)
         local fatigueChange = ZomboidGlobals.FatigueIncrease * Globals.statsDecreaseMultiplier * enduranceMultiplier * Globals.delta * tirednessRate * self.character:getFatiqueMultiplier()
     
-        self.javaStats:setFatigue(Math.min(self.javaStats:getFatigue() + fatigueChange, 1))
+        self.fatigue = Math.min(fatigue + fatigueChange, 1)
     end
+    self.javaStats:setFatigue(self.fatigue)
 end
 
 ---@param self CharacterStats
@@ -160,7 +162,7 @@ Fatigue.trySleep = function(self, bed)
     end
     
     if self.character:getSleepingTabletEffect() < 2000 then
-        if self.moodles:getMoodleLevel(MoodleType.Pain) >= 2 and self.javaStats:getFatigue() <= 0.85 then
+        if self.moodles:getMoodleLevel(MoodleType.Pain) >= 2 and self.fatigue <= 0.85 then
             self.character:Say(getText("ContextMenu_PainNoSleep"))
             return
         end

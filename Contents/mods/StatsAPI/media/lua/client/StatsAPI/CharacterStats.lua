@@ -10,6 +10,8 @@ local Fatigue = require "StatsAPI/stats/Fatigue"
 -- TODO: character trait modifiers should be cached here, as they don't change very often
 
 ---@class CharacterStats
+--TODO: caching all the stats like this would be future proof, as we'll likely need it for performance later on
+---@field fatigue number The character's fatigue at the end of the last stats calculation
 ---@field character IsoGameCharacter The character this StatsData belongs to
 ---@field playerNum int The character's playerNum
 ---@field javaStats Stats The character's Stats object
