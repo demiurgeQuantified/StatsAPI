@@ -115,30 +115,7 @@ end
 
 ---@param self CharacterStats
 Fatigue.updateSleep = function(self)
-    local forceWakeUpTime = self.forceWakeUpTime or 9
-    
-    local time = Globals.gameTime:getTimeOfDay()
-    local lastTime = Globals.gameTime:getLastTimeOfDay()
-    if lastTime > time then
-        if lastTime < forceWakeUpTime then
-            time = time + 24
-        else
-            lastTime = lastTime - 24
-        end
-    end
-    
-    local shouldWakeUp = false
-    if time >= forceWakeUpTime and lastTime < forceWakeUpTime then
-        shouldWakeUp = true
-    elseif self.character:getAsleepTime() > 16 then
-        shouldWakeUp = true
-    elseif bClient or getNumActivePlayers() > 1 then
-        shouldWakeUp = shouldWakeUp or self.character:pressedAim() or self.character:pressedMovement(false)
-    elseif self.forceWakeUp then
-        shouldWakeUp = true
-    end
-    
-    if shouldWakeUp then
+    if Fatigue.shouldWakeUp(self) then
         self.forceWakeUp = false
         getSoundManager():setMusicWakeState(self.character, "WakeNormal")
         getSleepingEvent():wakeUp(self.character)
@@ -153,26 +130,67 @@ Fatigue.updateSleep = function(self)
 end
 
 ---@param self CharacterStats
----@param bed IsoObject|nil
-Fatigue.trySleep = function(self, bed)
+---@return boolean
+Fatigue.shouldWakeUp = function(self)
+    if self.forceWakeUp then
+        return true
+    elseif self.character:getAsleepTime() > 16 then
+        return true
+    elseif bClient or getNumActivePlayers() > 1 then
+        if self.character:pressedAim() or self.character:pressedMovement(false) then
+            return true
+        end
+    end
+    
+    local forceWakeUpTime = self.forceWakeUpTime or 9
+    
+    local time = Globals.gameTime:getTimeOfDay()
+    local lastTime = Globals.gameTime:getLastTimeOfDay()
+    if lastTime > time then
+        if lastTime < forceWakeUpTime then
+            time = time + 24
+        else
+            lastTime = lastTime - 24
+        end
+    end
+    
+    if time >= forceWakeUpTime and lastTime < forceWakeUpTime then
+        return true
+    end
+    
+    return false
+end
+
+---@param self CharacterStats
+---@return boolean, string|nil
+Fatigue.canSleep = function(self)
     local zombiesNearby = self.oldNumZombiesVisible > 0 or self.javaStats:getNumChasingZombies() > 0 or self.javaStats:getNumVeryCloseZombies() > 0
     if zombiesNearby then
-        self.character:Say(getText("IGUI_Sleep_NotSafe"))
-        return
+        return false, getText("IGUI_Sleep_NotSafe")
     end
     
     if self.character:getSleepingTabletEffect() < 2000 then
         if self.moodles:getMoodleLevel(MoodleType.Pain) >= 2 and self.fatigue <= 0.85 then
-            self.character:Say(getText("ContextMenu_PainNoSleep"))
-            return
+            return false, getText("ContextMenu_PainNoSleep")
         end
         if self.moodles:getMoodleLevel(MoodleType.Panic) >= 1 then
-            self.character:Say(getText("ContextMenu_PanicNoSleep"))
-            return
+            return false, getText("ContextMenu_PanicNoSleep")
         end
     end
     
     if (self.character:getVariableBoolean("ExerciseEnded") == false) then
+        return false
+    end
+end
+
+---@param self CharacterStats
+---@param bed IsoObject|nil
+Fatigue.trySleep = function(self, bed)
+    local canSleep, reason = Fatigue.canSleep(self)
+    if not canSleep then
+        if reason then
+            self.character:Say(reason)
+        end
         return
     end
     

@@ -6,6 +6,7 @@ local Hunger = require "StatsAPI/stats/Hunger"
 local Panic = require "StatsAPI/stats/Panic"
 local Stress = require "StatsAPI/stats/Stress"
 local Fatigue = require "StatsAPI/stats/Fatigue"
+
 local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 
 -- TODO: character trait modifiers should be cached here, as they don't change very often
