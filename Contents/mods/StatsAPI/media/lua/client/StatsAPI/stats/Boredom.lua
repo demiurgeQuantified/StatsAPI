@@ -35,7 +35,7 @@ Boredom.updateBoredom = function(self)
     local boredomChange
     
     if self.character:isInARoom() then
-        boredomChange = Boredom.getIdleBoredom()
+        boredomChange = self:getIdleBoredom()
         if self.character:isSpeaking() then -- and not self.character.callOut -- we need a field api to access this
             boredomChange = boredomChange - Boredom.BoredomDecrease
         end
@@ -45,7 +45,7 @@ Boredom.updateBoredom = function(self)
         end
     elseif self.vehicle then
         if Math.abs(self.vehicle:getCurrentSpeedKmHour() <= 0.1) then
-            boredomChange = Boredom.getIdleBoredom()
+            boredomChange = self:getIdleBoredom()
         else
             boredomChange = -Boredom.BoredomDecrease * 0.5
         end

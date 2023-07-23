@@ -71,14 +71,14 @@ end
 
 ---@param self CharacterStats
 Panic.reducePanic = function(self)
-    local panic = self.javaStats:getPanic()
-    if panic > 0 then
+    self.panic = self.javaStats:getPanic()
+    if self.panic > 0 then
         local panicReduction = self.panicReduction
         
         local panicChange = panicReduction * Globals.multiplier / 1.6 + Panic.getSurvivalReduction(self)
         panicChange = panicChange * Panic.getPanicReductionModifier(self)
     
-        self.panic = Math.max(panic - panicChange, 0)
+        self.panic = Math.max(self.panic - panicChange, 0)
         self.javaStats:setPanic(self.panic)
     end
 end

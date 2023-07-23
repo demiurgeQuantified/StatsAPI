@@ -112,6 +112,7 @@ CharacterStats.updateStress = Stress.updateStress
 CharacterStats.updateFatigue = Fatigue.updateFatigue
 CharacterStats.updateSleep = Fatigue.updateSleep
 CharacterStats.updateBoredom = Boredom.updateBoredom
+CharacterStats.getIdleBoredom = Boredom.getIdleBoredom
 CharacterStats.updateSadness = Sadness.updateSadness
 
 ---@param self CharacterStats
