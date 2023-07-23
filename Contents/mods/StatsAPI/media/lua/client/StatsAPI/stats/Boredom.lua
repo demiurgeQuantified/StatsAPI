@@ -27,8 +27,7 @@ end
 Boredom.updateBoredom = function(self)
     if self.asleep then return end
     
-    -- TODO: cache panic after setting it
-    if self.javaStats:getPanic() > 5 then
+    if self.panic > 5 then
         self.bodyDamage:setBoredomLevel(0)
         return
     end

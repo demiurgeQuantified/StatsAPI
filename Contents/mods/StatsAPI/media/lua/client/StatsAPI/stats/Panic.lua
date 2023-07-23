@@ -65,7 +65,8 @@ end
 Panic.increasePanic = function(self, zombies)
     local panicChange = self.panicIncrease * Panic.getPanicMultiplier(self.character) * zombies
     
-    self.javaStats:setPanic(Math.min(self.javaStats:getPanic() + panicChange, 100))
+    self.panic = Math.min(self.javaStats:getPanic() + panicChange, 100)
+    self.javaStats:setPanic(self.panic)
 end
 
 ---@param self CharacterStats
@@ -77,7 +78,8 @@ Panic.reducePanic = function(self)
         local panicChange = panicReduction * Globals.multiplier / 1.6 + Panic.getSurvivalReduction(self)
         panicChange = panicChange * Panic.getPanicReductionModifier(self)
     
-        self.javaStats:setPanic(Math.max(panic - panicChange, 0))
+        self.panic = Math.max(panic - panicChange, 0)
+        self.javaStats:setPanic(self.panic)
     end
 end
 

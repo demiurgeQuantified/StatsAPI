@@ -16,6 +16,7 @@ local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 -- TODO: caching all the stats like this would be future proof, as we'll likely need it for performance later on
 ---@class CharacterStats
 ---@field fatigue number The character's fatigue at the end of the last stats calculation
+---@field panic number The character's panic at the end of the last stats calculation
 ---@field character IsoGameCharacter The character this StatsData belongs to
 ---@field playerNum int The character's playerNum
 ---@field bodyDamage BodyDamage The character's BodyDamage object
