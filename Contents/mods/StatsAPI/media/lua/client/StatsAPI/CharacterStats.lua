@@ -12,8 +12,7 @@ local Sadness = require "StatsAPI/stats/Sadness"
 local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 
 -- TODO: character trait modifiers should be cached here, as they don't change very often
-
--- TODO: caching all the stats like this would be future proof, as we'll likely need it for performance later on
+-- TODO: cache all the stats after they're applied so that we don't need to get them again for OverTimeEffects
 ---@class CharacterStats
 ---@field fatigue number The character's fatigue at the end of the last stats calculation
 ---@field panic number The character's panic at the end of the last stats calculation
@@ -143,6 +142,7 @@ end
 
 ---@param self CharacterStats
 CharacterStats.applyOverTimeEffects = function(self)
+    -- TODO: cache all the changes to each stat instead of applying them immediately, so if multiple effects are active it won't waste performance applying multiple times
     for j = 1, #self.overTimeEffects do
         local effect = self.overTimeEffects[j]
         local delta = Globals.delta

@@ -30,7 +30,14 @@ end)
 
 ---@class StatIdentifier : int
 ---@type table<string, StatIdentifier>
-Globals.Stats = {}
-Globals.Stats.Stress = 0
+Globals.Stats = {
+    Thirst = 0,
+    Hunger = 1,
+    Panic = 2,
+    Stress = 3,
+    Fatigue = 4,
+    Boredom = 5,
+    Sadness = 6
+}
 
 return Globals
