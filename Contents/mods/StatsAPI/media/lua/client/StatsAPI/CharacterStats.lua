@@ -6,6 +6,7 @@ local Hunger = require "StatsAPI/stats/Hunger"
 local Panic = require "StatsAPI/stats/Panic"
 local Stress = require "StatsAPI/stats/Stress"
 local Fatigue = require "StatsAPI/stats/Fatigue"
+local Boredom = require "StatsAPI/stats/Boredom"
 
 local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 
@@ -16,6 +17,7 @@ local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 ---@field fatigue number The character's fatigue at the end of the last stats calculation
 ---@field character IsoGameCharacter The character this StatsData belongs to
 ---@field playerNum int The character's playerNum
+---@field bodyDamage BodyDamage The character's BodyDamage object
 ---@field javaStats Stats The character's Stats object
 ---@field moodles Moodles The character's Moodles object
 ---@field panicIncrease number Multiplier on the character's panic increases
@@ -23,7 +25,7 @@ local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 ---@field oldNumZombiesVisible number The number of zombies the character could see on the previous frame
 ---@field forceWakeUp boolean Forces the character to wake up on the next frame if true
 ---@field forceWakeUpTime number Forces the character to wake up at this time if not nil
----@field insideVehicle boolean Is the character in a vehicle?
+---@field vehicle BaseVehicle|nil The player's current vehicle
 ---@field overTimeEffects table<int, OverTimeEffect> The character's active OverTimeEffects
 local CharacterStats = {}
 CharacterStats.panicIncrease = 7
@@ -61,6 +63,7 @@ CharacterStats.new = function(self, character)
     
     o.character = character
     o.playerNum = character:getPlayerNum()
+    o.bodyDamage = character:getBodyDamage()
     o.moodles = character:getMoodles()
     o.javaStats = character:getStats()
     
@@ -105,19 +108,24 @@ CharacterStats.updatePanic = Panic.updatePanic
 CharacterStats.updateStress = Stress.updateStress
 CharacterStats.updateFatigue = Fatigue.updateFatigue
 CharacterStats.updateSleep = Fatigue.updateSleep
+CharacterStats.updateBoredom = Boredom.updateBoredom
 
 ---@param self CharacterStats
 CharacterStats.CalculateStats = function(self)
     self.asleep = self.character:isAsleep()
-    self.insideVehicle = self.character:getVehicle() ~= nil
+    self.vehicle = self.character:getVehicle()
     
+    -- Stats stats
     self:updateStress()
     self:updateEndurance()
     self:updateThirst()
     self:updateFatigue()
     self:updateHunger()
-    self:updatePanic()
     self:updateFitness()
+    
+    -- BodyDamage stats
+    self:updatePanic()
+    self:updateBoredom()
     
     if self.asleep then
         self:updateSleep()

@@ -47,4 +47,12 @@ Math.floor = function(num)
     return num - num % 1
 end
 
+---Returns the absolute value of num.
+---@param num number
+---@return number
+Math.abs = function(num)
+    if num >= 0 then return num end
+    return -num
+end
+
 return Math
