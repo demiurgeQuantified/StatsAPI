@@ -42,6 +42,7 @@ Stress.getTraitStress = function(character)
     if character:HasTrait("Hemophobic") then
         stressChange = stressChange + character:getTotalBlood() * ZomboidGlobals.StressFromHemophobic * (Globals.multiplier / 0.8) * Globals.deltaMinutesPerDay
     end
+    -- TODO: handle cigarette stress here
     return stressChange
 end
 

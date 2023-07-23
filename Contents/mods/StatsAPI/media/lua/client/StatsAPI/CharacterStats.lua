@@ -7,6 +7,7 @@ local Panic = require "StatsAPI/stats/Panic"
 local Stress = require "StatsAPI/stats/Stress"
 local Fatigue = require "StatsAPI/stats/Fatigue"
 local Boredom = require "StatsAPI/stats/Boredom"
+local Sadness = require "StatsAPI/stats/Sadness"
 
 local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 
@@ -25,7 +26,8 @@ local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 ---@field oldNumZombiesVisible number The number of zombies the character could see on the previous frame
 ---@field forceWakeUp boolean Forces the character to wake up on the next frame if true
 ---@field forceWakeUpTime number Forces the character to wake up at this time if not nil
----@field vehicle BaseVehicle|nil The player's current vehicle
+---@field vehicle BaseVehicle|nil The character's current vehicle
+---@field reading boolean Is the character currently reading?
 ---@field overTimeEffects table<int, OverTimeEffect> The character's active OverTimeEffects
 local CharacterStats = {}
 CharacterStats.panicIncrease = 7
@@ -109,11 +111,13 @@ CharacterStats.updateStress = Stress.updateStress
 CharacterStats.updateFatigue = Fatigue.updateFatigue
 CharacterStats.updateSleep = Fatigue.updateSleep
 CharacterStats.updateBoredom = Boredom.updateBoredom
+CharacterStats.updateSadness = Sadness.updateSadness
 
 ---@param self CharacterStats
 CharacterStats.CalculateStats = function(self)
     self.asleep = self.character:isAsleep()
     self.vehicle = self.character:getVehicle()
+    self.reading = self.character:isReading()
     
     -- Stats stats
     self:updateStress()
@@ -126,6 +130,7 @@ CharacterStats.CalculateStats = function(self)
     -- BodyDamage stats
     self:updatePanic()
     self:updateBoredom()
+    self:updateSadness()
     
     if self.asleep then
         self:updateSleep()

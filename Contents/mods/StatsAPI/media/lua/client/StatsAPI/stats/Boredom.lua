@@ -14,7 +14,7 @@ ZomboidGlobals.BoredomDecrease = 0
 Boredom.getIdleBoredom = function(self)
     local boredomChange = 0
     
-    if self.character:isReading() then
+    if self.reading then
         boredomChange = boredomChange + Boredom.BoredomIncrease / 5
     else
         boredomChange = boredomChange + Boredom.BoredomIncrease
