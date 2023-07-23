@@ -181,6 +181,8 @@ Fatigue.canSleep = function(self)
     if (self.character:getVariableBoolean("ExerciseEnded") == false) then
         return false
     end
+    
+    return true
 end
 
 ---@param self CharacterStats
