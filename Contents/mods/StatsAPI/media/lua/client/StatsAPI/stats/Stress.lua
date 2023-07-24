@@ -5,9 +5,10 @@ local Stress = {}
 
 Stress.injuryStress = true
 Stress.infectionStress = true
-
----@type table<string, table<function,number>>
+---@type table<string, number>
 Stress.modChanges = {}
+---@type table<string, table<function,number>>
+Stress.modFunctions = {}
 
 ---@type WorldSoundManager
 local worldSoundManager
@@ -48,8 +49,11 @@ end
 ---@param data StatsData
 Stress.getModdedStressChange = function(data)
     local stressChange = 0
+    for _, modFunction in pairs(Stress.modFunctions) do
+        stressChange = stressChange + modFunction[1](data) * modFunction[2]
+    end
     for _, modChange in pairs(Stress.modChanges) do
-        stressChange = stressChange + modChange[1](data) * modChange[2]
+        stressChange = stressChange + modChange
     end
     return stressChange * Globals.gameWorldSecondsSinceLastUpdate
 end
