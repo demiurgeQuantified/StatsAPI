@@ -21,17 +21,16 @@ end
 ---@param self CharacterStats
 Hunger.updateHunger = function(self)
     local appetiteMultiplier = Hunger.getAppetiteMultiplier(self)
-    local wellFed = self.character:getMoodleLevel(MoodleType.FoodEaten) ~= 0
     local hungerChange = 0
     
     if not self.asleep then
         if not (self.character:isRunning() or self.character:isPlayerMoving()) and not self.character:isCurrentState(SwipeStatePlayer.instance()) then
-            if wellFed then
+            if self.wellFed then
                 hungerChange = ZomboidGlobals.HungerIncreaseWhenWellFed
             else
                 hungerChange = ZomboidGlobals.HungerIncrease * appetiteMultiplier
             end
-        elseif wellFed then
+        elseif self.wellFed then
             hungerChange = ZomboidGlobals.HungerIncreaseWhenExercise / 3 * appetiteMultiplier
         else
             hungerChange = ZomboidGlobals.HungerIncreaseWhenExercise * appetiteMultiplier
@@ -39,7 +38,7 @@ Hunger.updateHunger = function(self)
         hungerChange = hungerChange * Globals.statsDecreaseMultiplier * self.character:getHungerMultiplier() * Globals.delta
     else
         hungerChange = ZomboidGlobals.HungerIncreaseWhileAsleep * Globals.statsDecreaseMultiplier * self.character:getHungerMultiplier() * Globals.delta
-        if wellFed then
+        if self.wellFed then
             hungerChange = hungerChange * appetiteMultiplier
         else
             -- the stats decrease multiplier getting added twice is probably a mistake, but i don't want to change vanilla behaviour

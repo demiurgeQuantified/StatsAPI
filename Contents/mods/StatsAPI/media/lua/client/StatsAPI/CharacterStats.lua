@@ -8,6 +8,7 @@ local Stress = require "StatsAPI/stats/Stress"
 local Fatigue = require "StatsAPI/stats/Fatigue"
 local Boredom = require "StatsAPI/stats/Boredom"
 local Sadness = require "StatsAPI/stats/Sadness"
+local CarryWeight = require "StatsAPI/stats/CarryWeight"
 
 local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 
@@ -21,6 +22,7 @@ local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 ---@field bodyDamage BodyDamage The character's BodyDamage object
 ---@field javaStats Stats The character's Stats object
 ---@field moodles Moodles The character's Moodles object
+---@field wellFed boolean Does the character have a food buff active?
 ---@field panicIncrease number Multiplier on the character's panic increases
 ---@field panicReduction number Multiplier on the character's panic reductions
 ---@field oldNumZombiesVisible number The number of zombies the character could see on the previous frame
@@ -35,6 +37,7 @@ CharacterStats.panicReduction = 0.06
 CharacterStats.oldNumZombiesVisible = 0
 CharacterStats.forceWakeUp = false
 CharacterStats.asleep = false
+CharacterStats.staticCarryMod = 0
 
 CharacterStats.persistentStats = {forceWakeUpTime = true, overTimeEffects = true}
 ---@param self CharacterStats
@@ -113,12 +116,14 @@ CharacterStats.updateSleep = Fatigue.updateSleep
 CharacterStats.updateBoredom = Boredom.updateBoredom
 CharacterStats.getIdleBoredom = Boredom.getIdleBoredom
 CharacterStats.updateSadness = Sadness.updateSadness
+CharacterStats.updateCarryWeight = CarryWeight.updateCarryWeight
 
 ---@param self CharacterStats
 CharacterStats.CalculateStats = function(self)
     self.asleep = self.character:isAsleep()
     self.vehicle = self.character:getVehicle()
     self.reading = self.character:isReading()
+    self.wellFed = self.moodles:getMoodleLevel(MoodleType.FoodEaten) ~= 0
     
     -- Stats stats
     self:updateStress()
@@ -138,6 +143,8 @@ CharacterStats.CalculateStats = function(self)
     end
     
     self:applyOverTimeEffects()
+    
+    self:updateCarryWeight()
 end
 
 ---@param self CharacterStats

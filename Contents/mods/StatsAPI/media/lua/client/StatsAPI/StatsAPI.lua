@@ -140,25 +140,24 @@ StatsAPI.removeStressChange = function(sourceName)
     StatsAPI.Stress.modChanges[sourceName] = nil
 end
 
+
 ---Prevents the vanilla trait effects from being added. Must be called before OnGameBoot or it will have no effect.
 StatsAPI.disableVanillaTraits = function()
     local Vanilla = require "StatsAPI/vanilla/VanillaTraits"
     Vanilla.wantVanilla = false
 end
 
----Returns the CharacterStats object for a character
----@param character IsoGameCharacter
----@return CharacterStats|nil
-StatsAPI.getCharacterStats = function(character)
-    return CharacterStats.get(character)
-end
-
----Returns the CharacterStats object for the local player index
----@param playerNum int
----@return CharacterStats|nil
-StatsAPI.getPlayerStats = function(playerNum)
-    local player = getSpecificPlayer(playerNum)
-    return CharacterStats.get(player)
+---Increases the character's maximum carry weight by amount. If character is nil, it changes the default value instead.
+---@param character IsoGameCharacter|nil
+---@param amount number
+StatsAPI.addCarryWeightModifier = function(character, amount)
+    if character then
+        local stats = CharacterStats.get(character)
+        if not stats then error("StatsAPI: Invalid character for carry weight modifier") return end
+        stats.staticCarryMod = stats.staticCarryMod + amount
+    else
+        CharacterStats.staticCarryMod = CharacterStats.staticCarryMod + amount
+    end
 end
 
 return StatsAPI
