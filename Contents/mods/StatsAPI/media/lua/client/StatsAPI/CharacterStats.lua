@@ -17,17 +17,23 @@ local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 ---@class CharacterStats
 ---@field fatigue number The character's fatigue at the end of the last stats calculation
 ---@field panic number The character's panic at the end of the last stats calculation
+---
 ---@field character IsoGameCharacter The character this StatsData belongs to
 ---@field playerNum int The character's playerNum
 ---@field bodyDamage BodyDamage The character's BodyDamage object
 ---@field javaStats Stats The character's Stats object
 ---@field moodles Moodles The character's Moodles object
----@field wellFed boolean Does the character have a food buff active?
+---
+---@field maxWeightDelta number The character's carry weight multiplier, usually from traits
 ---@field panicIncrease number Multiplier on the character's panic increases
 ---@field panicReduction number Multiplier on the character's panic reductions
----@field oldNumZombiesVisible number The number of zombies the character could see on the previous frame
+---@field panicMultiplier number Multiplier on
+---
 ---@field forceWakeUp boolean Forces the character to wake up on the next frame if true
 ---@field forceWakeUpTime number Forces the character to wake up at this time if not nil
+---
+---@field wellFed boolean Does the character have a food buff active?
+---@field oldNumZombiesVisible number The number of zombies the character could see on the previous frame
 ---@field vehicle BaseVehicle|nil The character's current vehicle
 ---@field reading boolean Is the character currently reading?
 ---@field overTimeEffects table<int, OverTimeEffect> The character's active OverTimeEffects
@@ -77,6 +83,8 @@ CharacterStats.new = function(self, character)
     modData.StatsAPI.StatsData = modData.StatsAPI.StatsData or {}
     o.modData = modData.StatsAPI.StatsData
     
+    o:refreshTraits()
+    
     o.modData.overTimeEffects = o.modData.overTimeEffects or {}
     
     return o
@@ -124,6 +132,10 @@ CharacterStats.updateCache = function(self)
     self.vehicle = self.character:getVehicle()
     self.reading = self.character:isReading()
     self.wellFed = self.moodles:getMoodleLevel(MoodleType.FoodEaten) ~= 0
+end
+
+CharacterStats.refreshTraits = function(self)
+    self.maxWeightDelta = CarryWeight.getMaxWeightDelta(self.character)
 end
 
 ---@param self CharacterStats
@@ -214,6 +226,15 @@ isoPlayer.forceAwake = function(self)
         CharacterStats.getOrCreate(self).forceWakeUp = true
     end
     old_forceAwake(self)
+end
+
+---@type fun(self:IsoPlayer, maxWeightDelta:float)
+local old_setMaxWeightDelta = isoPlayer.setMaxWeightDelta
+---@param self IsoPlayer
+---@param maxWeightDelta float
+isoPlayer.setMaxWeightDelta = function(self, maxWeightDelta)
+    CharacterStats.getOrCreate(self).maxWeightDelta = maxWeightDelta
+    old_setMaxWeightDelta(self, maxWeightDelta)
 end
 
 local bodyDamage = __classmetatables[BodyDamage.class].__index

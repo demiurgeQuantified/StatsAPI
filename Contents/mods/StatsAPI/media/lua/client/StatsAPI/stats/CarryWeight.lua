@@ -2,6 +2,22 @@ local Math = require "StatsAPI/lib/Math"
 
 local CarryWeight = {}
 
+CarryWeight.maxWeightMultipliers = {}
+
+---@param character IsoGameCharacter
+---@return number
+CarryWeight.getMaxWeightDelta = function(character)
+    local maxWeightDelta = 1
+    
+    for trait, multiplier in pairs(CarryWeight.maxWeightMultipliers) do
+        if character:HasTrait(trait) then
+            maxWeightDelta = maxWeightDelta * multiplier
+        end
+    end
+    
+    return maxWeightDelta
+end
+
 ---@param stats CharacterStats
 ---@return number
 CarryWeight.getCarryWeightModifier = function(stats)
@@ -48,8 +64,7 @@ end
 CarryWeight.updateCarryWeight = function(self)
     -- TODO: caching these would be much cheaper, they don't even change in vanilla
     local carryWeight = self.character:getMaxWeightBase() * self.character:getWeightMod() + CarryWeight.getCarryWeightModifier(self)
-    -- TODO: maxWeightDelta could be reimplemented
-    carryWeight = carryWeight * self.character:getMaxWeightDelta()
+    carryWeight = carryWeight * self.maxWeightDelta
     
     self.character:setMaxWeight(Math.max(carryWeight, 0))
 end

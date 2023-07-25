@@ -30,6 +30,11 @@ Vanilla.addTraitModifiers = function()
         StatsAPI.addTraitPanicModifier("Cowardly", 2)
         StatsAPI.addTraitPanicModifier("Brave", 0.3)
         StatsAPI.addTraitPanicModifier("Desensitized", 0)
+    
+        StatsAPI.addCarryWeightModifier("Strong", 1.5)
+        StatsAPI.addCarryWeightModifier("Weak", 0.75)
+        StatsAPI.addCarryWeightModifier("Feeble", 0.9)
+        StatsAPI.addCarryWeightModifier("Stout", 1.25)
     end
 end
 

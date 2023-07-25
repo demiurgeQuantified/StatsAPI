@@ -7,6 +7,7 @@ StatsAPI.Hunger = require "StatsAPI/stats/Hunger"
 StatsAPI.Thirst = require "StatsAPI/stats/Thirst"
 StatsAPI.Stress = require "StatsAPI/stats/Stress"
 StatsAPI.Panic = require "StatsAPI/stats/Panic"
+StatsAPI.CarryWeight = require "StatsAPI/stats/CarryWeight"
 
 StatsAPI.Stats = require "StatsAPI/Globals".Stats
 
@@ -28,8 +29,10 @@ Events.OnCreatePlayer.Add(StatsAPI.preparePlayer)
 
 ---Adds a fatigue multiplier to apply to characters who have the given trait.
 ---@param trait string The ID of the trait
----@param awakeModifier number|nil The fatigue multiplier to give characters with the trait while they are awake
----@param asleepModifier number|nil The fatigue multiplier to give characters with the trait while they are asleep
+---@param awakeModifier number The fatigue multiplier to give characters with the trait while they are awake
+---@param asleepModifier number The fatigue multiplier to give characters with the trait while they are asleep
+---@overload fun(trait:string, awakeModifier:number)
+---@overload fun(trait:string, awakeModifier:nil, asleepModifier:number)
 StatsAPI.addTraitFatigueModifier = function(trait, awakeModifier, asleepModifier)
     StatsAPI.Fatigue.fatigueRate.awake[trait] = awakeModifier
     StatsAPI.Fatigue.fatigueRate.asleep[trait] = asleepModifier
@@ -66,6 +69,13 @@ end
 ---@param modifier number The panic multiplier to give characters with the trait
 StatsAPI.addTraitPanicModifier = function(trait, modifier)
     StatsAPI.Panic.traitMultipliers[trait] = modifier
+end
+
+---Adds a carry weight multiplier to apply to characters who have the given trait.
+---@param trait string The ID of the trait
+---@param modifier number The panic multiplier to give characters with the trait
+StatsAPI.addCarryWeightModifier = function(trait, modifier)
+    StatsAPI.CarryWeight.maxWeightMultipliers[trait] = modifier
 end
 
 
@@ -148,9 +158,10 @@ StatsAPI.disableVanillaTraits = function()
 end
 
 ---Increases the character's maximum carry weight by amount. If character is nil, it changes the default value instead.
----@param character IsoGameCharacter|nil
+---@param character IsoGameCharacter
 ---@param amount number
-StatsAPI.addCarryWeightModifier = function(character, amount)
+---@overload fun(character:nil, amount:IsoGameCharacter)
+StatsAPI.addCarryWeight = function(character, amount)
     if character then
         local stats = CharacterStats.get(character)
         if not stats then error("StatsAPI: Invalid character for carry weight modifier") return end
