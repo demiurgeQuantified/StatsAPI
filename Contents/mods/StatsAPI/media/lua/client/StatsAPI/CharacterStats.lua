@@ -119,12 +119,17 @@ CharacterStats.updateSadness = Sadness.updateSadness
 CharacterStats.updateCarryWeight = CarryWeight.updateCarryWeight
 
 ---@param self CharacterStats
-CharacterStats.CalculateStats = function(self)
+CharacterStats.updateCache = function(self)
     self.asleep = self.character:isAsleep()
     self.vehicle = self.character:getVehicle()
     self.reading = self.character:isReading()
     self.wellFed = self.moodles:getMoodleLevel(MoodleType.FoodEaten) ~= 0
-    
+end
+
+---@param self CharacterStats
+CharacterStats.CalculateStats = function(self)
+    self:updateCache()
+
     -- Stats stats
     self:updateStress()
     self:updateEndurance()

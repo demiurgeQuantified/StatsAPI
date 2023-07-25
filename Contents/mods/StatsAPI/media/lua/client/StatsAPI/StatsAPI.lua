@@ -69,23 +69,23 @@ StatsAPI.addTraitPanicModifier = function(trait, modifier)
 end
 
 
----Adds an amount of a stat to a character over the specified time in seconds.
+---Adds an amount of a stat to a character over the specified time in real seconds, adjusted by day length.
 ---@param character IsoGameCharacter The character to apply the effect to
 ---@param stat StatIdentifier The stat to add to
 ---@param total number The total amount of the stat to add
 ---@param time number The time in seconds it should take to complete the effect
 StatsAPI.addOverTimeEffect = function(character, stat, total, time)
-    time = time * 24 -- not 48 because the default delta is half
+    time = time * 24
     OverTimeEffects.create(CharacterStats.get(character), stat, total / time, time)
 end
 
----Adds an amount of a stat to a character over the specified time in hours.
+---Adds an amount of a stat to a character over the specified time in game-world hours.
 ---@param character IsoGameCharacter The character to apply the effect to
 ---@param stat StatIdentifier The stat to add to
 ---@param total number The total amount of the stat to add
 ---@param time number The time in seconds it should take to complete the effect
 StatsAPI.addOverTimeEffectHours = function(character, stat, total, time)
-    StatsAPI.addOverTimeEffect(character, stat, total, time * 3600)
+    StatsAPI.addOverTimeEffect(character, stat, total, time * 150)
 end
 
 ---Adds a constant amount of the stat to the character for the duration in seconds.
