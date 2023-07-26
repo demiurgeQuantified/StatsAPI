@@ -130,8 +130,10 @@ end
 ---@param self LuaMoodle
 LuaMoodle.cleanup = function(self)
     self:removeFromUIManager()
-    self.javaObject:setTable(nil)
-    self.javaObject = nil
+    if self.javaObject then
+        self.javaObject:setTable(nil)
+        self.javaObject = nil
+    end
 end
 
 LuaMoodle.updateOscillator = function()

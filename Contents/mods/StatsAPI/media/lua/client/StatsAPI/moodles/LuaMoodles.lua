@@ -18,12 +18,14 @@ LuaMoodles.topOffset = 100
 
 ---@private
 ---@param self LuaMoodles
----@param playerNum int
-LuaMoodles.new = function(self, playerNum)
+---@param stats CharacterStats
+LuaMoodles.new = function(self, stats)
     local o = {}
     setmetatable(o, self)
     
-    o.playerNum = playerNum
+    o.stats = stats
+    o.playerNum = stats.playerNum
+    
     o.showingMoodles = {}
     o.moodles = {}
     for i = 1, #MoodleTemplate.templates do
@@ -82,10 +84,10 @@ LuaMoodles.adjustPosition = function(self)
     self:sortMoodles()
 end
 
----@param playerNum int
-LuaMoodles.create = function(playerNum)
-    local moodles = LuaMoodles:new(playerNum)
-    LuaMoodles.instanceMap[playerNum] = moodles
+---@param stats CharacterStats
+LuaMoodles.create = function(stats)
+    local moodles = LuaMoodles:new(stats)
+    LuaMoodles.instanceMap[stats.playerNum] = moodles
     for i = 0, 3 do
         ---@type LuaMoodles
         local instance = LuaMoodles.instanceMap[i]
@@ -110,6 +112,9 @@ LuaMoodles.onDeath = function(self)
         self.showingMoodles[i]:setLevel(0)
     end
     self.moodles.dead:setLevel(4)
+    if self.stats.bodyDamage:getInfectionLevel() > 0.001 then
+        self.moodles.zombie:setLevel(4)
+    end
 end
 
 
