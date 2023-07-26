@@ -1,13 +1,14 @@
 local CharacterStats = require "StatsAPI/CharacterStats"
 local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 
+local Fatigue = require "StatsAPI/stats/Fatigue"
+local Hunger = require "StatsAPI/stats/Hunger"
+local Thirst = require "StatsAPI/stats/Thirst"
+local Stress = require "StatsAPI/stats/Stress"
+local Panic = require "StatsAPI/stats/Panic"
+local CarryWeight = require "StatsAPI/stats/CarryWeight"
+
 local StatsAPI = {}
-StatsAPI.Fatigue = require "StatsAPI/stats/Fatigue"
-StatsAPI.Hunger = require "StatsAPI/stats/Hunger"
-StatsAPI.Thirst = require "StatsAPI/stats/Thirst"
-StatsAPI.Stress = require "StatsAPI/stats/Stress"
-StatsAPI.Panic = require "StatsAPI/stats/Panic"
-StatsAPI.CarryWeight = require "StatsAPI/stats/CarryWeight"
 
 StatsAPI.Stats = require "StatsAPI/Globals".Stats
 
@@ -21,7 +22,7 @@ Hook.CalculateStats.Add(StatsAPI.CalculateStats)
 ---@param playerIndex int
 ---@param player IsoPlayer
 StatsAPI.preparePlayer = function(playerIndex, player)
-    StatsAPI.Panic.disableVanillaPanic(player)
+    Panic.disableVanillaPanic(player)
 end
 
 Events.OnCreatePlayer.Add(StatsAPI.preparePlayer)
@@ -34,48 +35,48 @@ Events.OnCreatePlayer.Add(StatsAPI.preparePlayer)
 ---@overload fun(trait:string, awakeModifier:number)
 ---@overload fun(trait:string, awakeModifier:nil, asleepModifier:number)
 StatsAPI.addTraitFatigueModifier = function(trait, awakeModifier, asleepModifier)
-    StatsAPI.Fatigue.fatigueRate.awake[trait] = awakeModifier
-    StatsAPI.Fatigue.fatigueRate.asleep[trait] = asleepModifier
+    Fatigue.fatigueRate.awake[trait] = awakeModifier
+    Fatigue.fatigueRate.asleep[trait] = asleepModifier
 end
 
 ---Adds a sleeping efficiency multiplier to apply to characters who have the given trait.
 ---@param trait string The ID of the trait
 ---@param modifier number The sleeping efficiency multiplier to give characters with the trait
 StatsAPI.addTraitSleepModifier = function(trait, modifier)
-    StatsAPI.Fatigue.sleepEfficiency[trait] = modifier
+    Fatigue.sleepEfficiency[trait] = modifier
 end
 
 ---Adds a sleep duration multiplier to apply to characters who have the given trait.
 StatsAPI.addTraitSleepDurationModifier = function(trait, modifier)
-    StatsAPI.Fatigue.sleepLength[trait] = modifier
+    Fatigue.sleepLength[trait] = modifier
 end
 
 ---Adds a hunger multiplier to apply to characters who have the given trait.
 ---@param trait string The ID of the trait
 ---@param modifier number The hunger multiplier to give characters with the trait
 StatsAPI.addTraitHungerModifier = function(trait, modifier)
-    StatsAPI.Hunger.appetiteMultipliers[trait] = modifier
+    Hunger.appetiteMultipliers[trait] = modifier
 end
 
 ---Adds a thirst multiplier to apply to characters who have the given trait.
 ---@param trait string The ID of the trait
 ---@param modifier number The thirst multiplier to give characters with the trait
 StatsAPI.addTraitThirstModifier = function(trait, modifier)
-    StatsAPI.Thirst.thirstMultipliers[trait] = modifier
+    Thirst.thirstMultipliers[trait] = modifier
 end
 
 ---Adds a panic multiplier to apply to characters who have the given trait.
 ---@param trait string The ID of the trait
 ---@param modifier number The panic multiplier to give characters with the trait
 StatsAPI.addTraitPanicModifier = function(trait, modifier)
-    StatsAPI.Panic.traitMultipliers[trait] = modifier
+    Panic.traitMultipliers[trait] = modifier
 end
 
 ---Adds a carry weight multiplier to apply to characters who have the given trait.
 ---@param trait string The ID of the trait
 ---@param modifier number The panic multiplier to give characters with the trait
 StatsAPI.addCarryWeightModifier = function(trait, modifier)
-    StatsAPI.CarryWeight.maxWeightMultipliers[trait] = modifier
+    CarryWeight.maxWeightMultipliers[trait] = modifier
 end
 
 
@@ -121,33 +122,33 @@ end
 ---Toggles whether being injured causes characters to gain stress.
 ---@param injuryStress boolean Should injuries cause stress?
 StatsAPI.setStressFromInjuries = function(injuryStress)
-    StatsAPI.Stress.injuryStress = injuryStress
+    Stress.injuryStress = injuryStress
 end
 
 ---Toggles whether being infected with the Knox virus causes characters to gain stress.
 ---@param infectionStress boolean Should infection cause stress?
 StatsAPI.setStressFromInfection = function(infectionStress)
-    StatsAPI.Stress.infectionStress = infectionStress
+    Stress.infectionStress = infectionStress
 end
 
 ---Adds a constant change to stress
 ---@param sourceName string The name of the stress source for later identification
 ---@param dailyChange number The percent amount the stat should change by over a day
 StatsAPI.addStressChangeDaily = function(sourceName, dailyChange)
-    StatsAPI.Stress.modChanges[sourceName] = dailyChange / 86400 / 100
+    Stress.modChanges[sourceName] = dailyChange / 86400 / 100
 end
 
 ---Adds a constant change to stress
 ---@param sourceName string The name of the stress source for later identification
 ---@param hourlyChange number The percent amount the stat should change by over an hour
 StatsAPI.addStressChangeHourly = function(sourceName, hourlyChange)
-    StatsAPI.Stress.modChanges[sourceName] = hourlyChange / 3600 / 100
+    Stress.modChanges[sourceName] = hourlyChange / 3600 / 100
 end
 
 ---Adds a constant change to stress, the cause being whichever the mod maker wishes
 ---@param sourceName string The name of the stress source for later identification
 StatsAPI.removeStressChange = function(sourceName)
-    StatsAPI.Stress.modChanges[sourceName] = nil
+    Stress.modChanges[sourceName] = nil
 end
 
 
