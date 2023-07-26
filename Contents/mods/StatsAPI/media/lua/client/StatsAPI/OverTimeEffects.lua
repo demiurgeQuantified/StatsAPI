@@ -14,7 +14,7 @@ OverTimeEffects.statSetters[Stats.Panic] = function(stats, amount)
     stats.javaStats:setPanic(stats.javaStats:getPanic() + amount)
 end
 OverTimeEffects.statSetters[Stats.Stress] = function(stats, amount)
-    stats.javaStats:setStress(stats.javaStats:getStress() - stats.javaStats:getStressFromCigarettes() + amount)
+    stats.javaStats:setStress(stats.javaStats.stress + amount)
 end
 OverTimeEffects.statSetters[Stats.Fatigue] = function(stats, amount)
     stats.javaStats:setFatigue(stats.javaStats:getFatigue() + amount)

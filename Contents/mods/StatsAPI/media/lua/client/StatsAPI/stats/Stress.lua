@@ -56,7 +56,7 @@ end
 
 ---@param self CharacterStats
 Stress.updateStress = function(self)
-    local stress = self.javaStats:getStress() - self.javaStats:getStressFromCigarettes()
+    local stress = self.javaStats.stress
     stress = stress + worldSoundManager:getStressFromSounds(self.character:getX(), self.character:getY(), self.character:getZ()) * ZomboidGlobals.StressFromSoundsMultiplier
     stress = stress + Stress.getHealthStress(self.character)
     stress = stress + Stress.getTraitStress(self.character)
