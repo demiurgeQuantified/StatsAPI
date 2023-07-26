@@ -4,6 +4,9 @@ local Math = require "StatsAPI/lib/Math"
 local textManager = getTextManager()
 local FONT_HGT_SMALL = textManager:getFontHeight(UIFont.Small)
 
+local chevronTextures = {up = {getTexture("media/ui/Moodle_chevron_up.png"), getTexture("media/ui/Moodle_chevron_up_border.png")},
+                         down = {getTexture("media/ui/Moodle_chevron_down.png"), getTexture("media/ui/Moodle_chevron_down_border.png")}}
+
 ---@class LuaMoodle : ISUIElement
 ---@field baseY number
 ---@field template MoodleTemplate
@@ -13,6 +16,9 @@ local FONT_HGT_SMALL = textManager:getFontHeight(UIFont.Small)
 ---@field renderIndex int
 ---@field parent LuaMoodles
 ---@field oscillationLevel number
+---@field chevronCount number
+---@field chevronUp boolean
+---@field chevronColor table<float>
 local LuaMoodle = ISUIElement:derive("LuaMoodle")
 LuaMoodle.oscillator = 0
 LuaMoodle.oscillatorStep = 0
@@ -33,6 +39,10 @@ LuaMoodle.new = function(self, x, y, template, parent)
     o.parent = parent
     
     o.level = 0
+    o.chevronCount = 0
+    o.chevronUp = true
+    o.chevronColor = {1, 1, 1, 1}
+    
     o.renderIndex = 1
     o.oscillationLevel = 0
     
@@ -78,8 +88,19 @@ end
 ---@param self LuaMoodle
 LuaMoodle.render = function(self)
     local x = LuaMoodle.oscillator * self.oscillationLevel
+    
     self:drawTextureScaledUniform(self.backgrounds[self.level] or self.backgrounds[1], x, 0, self.parent.scale, 1, 1, 1, 1)
     self:drawTextureScaledUniform(self.texture, x, 0, self.parent.scale, 1, 1, 1, 1)
+    
+    if self.chevronCount > 0 then
+        local tex = chevronTextures[self.chevronUp and "up" or "down"]
+        for i = 1, self.chevronCount do
+            local y = 24 - i * 4
+            self:drawTextureScaledUniform(tex[1], x + 16, y, self.parent.scale, unpack(self.chevronColor))
+            self:drawTextureScaledUniform(tex[2], x + 16, y, self.parent.scale, unpack(self.chevronColor))
+        end
+    end
+    
     if self:isMouseOver() then
         local name = self.template.text[self.level].name
         local desc = self.template.text[self.level].desc
