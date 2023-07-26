@@ -241,4 +241,10 @@ end
 
 Events.OnCreatePlayer.Add(CharacterStats.preparePlayer)
 
+---@param player IsoPlayer
+CharacterStats.cleanupPlayer = function(player)
+    CharacterStats[player] = nil
+end
+Events.OnPlayerDeath.Add(CharacterStats.cleanupPlayer)
+
 return CharacterStats
