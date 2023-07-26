@@ -184,11 +184,13 @@ CharacterStats.CalculateStats = function(self)
 end
 
 CharacterStats.moodleThresholds = {
-    stress = {0.25, 0.5, 0.75, 0.9}
+    stress = {0.25, 0.5, 0.75, 0.9},
+    foodeaten = {0, 1600, 3200, 4800}
 }
 ---@param self CharacterStats
 CharacterStats.updateMoodles = function(self)
-    local stats = {stress = self.javaStats:getStress()}
+    local stats = {stress = self.javaStats:getStress(), foodeaten = self.bodyDamage:getHealthFromFoodTimer()}
+    
     for moodle, thresholds in pairs(CharacterStats.moodleThresholds) do
         local desiredLevel = 0
         for i = #thresholds, 1, -1 do

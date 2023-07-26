@@ -1,5 +1,6 @@
 local CharacterStats = require "StatsAPI/CharacterStats"
 local OverTimeEffects = require "StatsAPI/OverTimeEffects"
+local MoodleTemplate = require "StatsAPI/moodles/MoodleTemplate"
 
 local Fatigue = require "StatsAPI/stats/Fatigue"
 local Hunger = require "StatsAPI/stats/Hunger"
@@ -153,6 +154,36 @@ StatsAPI.addCarryWeight = function(character, amount)
     else
         CharacterStats.staticCarryMod = CharacterStats.staticCarryMod + amount
     end
+end
+
+local moodleName = "Moodles_%s_lvl%d"
+local moodleDesc = "Moodles_%s_desc_lvl%d"
+
+---@param moodleType string
+---@param icon Texture|string
+---@param levels int
+---@param positive boolean
+StatsAPI.addMoodle = function(moodleType, icon, levels, positive)
+    if type(icon) == "string" then
+        icon = getTexture(icon)
+    end
+    
+    local backgrounds = not positive and MoodleTemplate.Backgrounds.Negative or MoodleTemplate.Backgrounds.Positive
+    local translations = {}
+    
+    local lastNum
+    for i = 1, levels do
+        local num = lastNum or i
+        local name = getTextOrNull(string.format(moodleName, moodleType, i))
+        if not name then
+            lastNum = i - 1
+            num = lastNum
+            name = getText(string.format(moodleName, moodleType, lastNum))
+        end
+        translations[i] = {name = name, desc = getText(string.format(moodleDesc, moodleType, num))}
+    end
+    
+    MoodleTemplate:new(moodleType, icon, backgrounds, translations)
 end
 
 return StatsAPI
