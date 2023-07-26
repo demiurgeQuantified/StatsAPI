@@ -64,6 +64,8 @@ end
 ---@param self LuaMoodle
 ---@param level int
 LuaMoodle.setLevel = function(self, level)
+    if level == self.level then return end
+    
     local showing = self.level > 0
     if not showing then
         if level > 0 then

@@ -179,6 +179,26 @@ CharacterStats.CalculateStats = function(self)
     self:applyOverTimeEffects()
     
     self:updateCarryWeight()
+    
+    self:updateMoodles()
+end
+
+CharacterStats.moodleThresholds = {
+    stress = {0.25, 0.5, 0.75, 0.9}
+}
+---@param self CharacterStats
+CharacterStats.updateMoodles = function(self)
+    local stats = {stress = self.javaStats:getStress()}
+    for moodle, thresholds in pairs(CharacterStats.moodleThresholds) do
+        local desiredLevel = 0
+        for i = #thresholds, 1, -1 do
+            if stats[moodle] > thresholds[i] then
+                desiredLevel = i
+                break
+            end
+        end
+        self.luaMoodles.moodles[moodle]:setLevel(desiredLevel)
+    end
 end
 
 ---@param self CharacterStats
@@ -241,8 +261,6 @@ CharacterStats.preparePlayer = function(playerIndex, player)
     end
     local stats = CharacterStats.create(player)
     stats.luaMoodles = LuaMoodles.create(stats)
-    stats.luaMoodles.moodles.stress:setLevel(1)
-    stats.luaMoodles.moodles.foodeaten:setLevel(2)
     Panic.disableVanillaPanic(player)
 end
 
