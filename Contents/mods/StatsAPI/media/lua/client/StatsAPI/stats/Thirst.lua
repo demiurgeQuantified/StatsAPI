@@ -20,7 +20,7 @@ end
 ---@param self CharacterStats
 Thirst.updateThirst = function(self)
     if not self.character:isGhostMode() then
-        local thirstMultiplier = Thirst.getThirstMultiplier(self.character) * Globals.statsDecreaseMultiplier * Globals.delta
+        local thirstMultiplier = self.thirstMultiplier * Globals.statsDecreaseMultiplier * Globals.delta
         local thirst = self.javaStats:getThirst()
         if not self.asleep then
             if self.character:isRunning() then

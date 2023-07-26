@@ -4,13 +4,13 @@ local Globals = require "StatsAPI/Globals"
 local Hunger = {}
 Hunger.appetiteMultipliers = {}
 
----@param stats CharacterStats
+---@param character IsoGameCharacter
 ---@return number
-Hunger.getAppetiteMultiplier = function(stats)
-    local appetite = 1 - stats.javaStats:getHunger()
+Hunger.getAppetiteMultiplier = function(character)
+    local appetite = 1
     
     for trait, multiplier in pairs(Hunger.appetiteMultipliers) do
-        if stats.character:HasTrait(trait) then
+        if character:HasTrait(trait) then
             appetite = appetite * multiplier
         end
     end
@@ -20,7 +20,8 @@ end
 
 ---@param self CharacterStats
 Hunger.updateHunger = function(self)
-    local appetiteMultiplier = Hunger.getAppetiteMultiplier(self)
+    local hunger = self.javaStats:getHunger()
+    local appetiteMultiplier = (1 - hunger) * self.hungerMultiplier
     local hungerChange = 0
     
     if not self.asleep then
@@ -47,7 +48,7 @@ Hunger.updateHunger = function(self)
         end
     end
     
-    self.javaStats:setHunger(Math.min(self.javaStats:getHunger() + hungerChange, 1))
+    self.javaStats:setHunger(Math.min(hunger + hungerChange, 1))
 end
 
 return Hunger

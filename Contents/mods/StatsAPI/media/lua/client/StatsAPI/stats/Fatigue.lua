@@ -10,19 +10,26 @@ Fatigue.fatigueRate = {awake = {}, asleep = {}}
 Fatigue.sleepEfficiency = {}
 Fatigue.sleepLength = {}
 
----@param stats CharacterStats
----@return number
-Fatigue.getFatigueRate = function(stats)
-    local fatigueRates = stats.asleep and Fatigue.fatigueRate.asleep or Fatigue.fatigueRate.awake
+---@param character IsoGameCharacter
+---@return number, number
+Fatigue.getFatigueRates = function(character)
+    local fatigueRateAwake = 1
     
-    local fatigueRate = 1
-    for trait, multiplier in pairs(fatigueRates) do
-        if stats.character:HasTrait(trait) then
-            fatigueRate = fatigueRate * multiplier
+    for trait, multiplier in pairs(Fatigue.fatigueRate.awake) do
+        if character:HasTrait(trait) then
+            fatigueRateAwake = fatigueRateAwake * multiplier
         end
     end
     
-    return fatigueRate
+    local fatigueRateAsleep = 1
+    
+    for trait, multiplier in pairs(Fatigue.fatigueRate.asleep) do
+        if character:HasTrait(trait) then
+            fatigueRateAsleep = fatigueRateAsleep * multiplier
+        end
+    end
+    
+    return fatigueRateAwake, fatigueRateAsleep
 end
 
 ---@param character IsoGameCharacter
@@ -89,24 +96,23 @@ Fatigue.updateFatigue = function(self)
             local bedMultiplier = Fatigue.bedEfficiency[self.character:getBedType()] or 1
         
             local fatigueDelta = 1 / Globals.gameTime:getMinutesPerDay() / 60 * Globals.multiplier / 2
-            local fatigueRate = Fatigue.getFatigueRate(self)
         
             local fatigueDecrease = 0
             if fatigue <= 0.3 then
-                fatigueDecrease = fatigueDelta / (fatigueRate * 7) * 0.3
+                fatigueDecrease = fatigueDelta / (self.fatigueMultiplierAsleep * 7) * 0.3
             else
-                fatigueDecrease = fatigueDelta / (fatigueRate * 5) * 0.7
+                fatigueDecrease = fatigueDelta / (self.fatigueMultiplierAsleep * 5) * 0.7
             end
-            fatigueDecrease = fatigueDecrease * Fatigue.getSleepEfficiency(self.character) * bedMultiplier
+            fatigueDecrease = fatigueDecrease * self.sleepEfficiency * bedMultiplier
             self.fatigue = Math.max(fatigue - fatigueDecrease, 0)
         else
             self.fatigue = fatigue
             return
         end
     else
-        local tirednessRate = Fatigue.getFatigueRate(self)
+        -- TODO: cache endurance
         local enduranceMultiplier = Math.max(1 - self.javaStats:getEndurance(), 0.3)
-        local fatigueChange = ZomboidGlobals.FatigueIncrease * Globals.statsDecreaseMultiplier * enduranceMultiplier * Globals.delta * tirednessRate * self.character:getFatiqueMultiplier()
+        local fatigueChange = ZomboidGlobals.FatigueIncrease * Globals.statsDecreaseMultiplier * enduranceMultiplier * Globals.delta * self.fatigueMultiplierAwake * self.character:getFatiqueMultiplier()
     
         self.fatigue = Math.min(fatigue + fatigueChange, 1)
     end

@@ -12,7 +12,6 @@ local CarryWeight = require "StatsAPI/stats/CarryWeight"
 
 local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 
--- TODO: character trait modifiers should be cached here, as they don't change very often
 -- TODO: cache all the stats after they're applied so that we don't need to get them again for OverTimeEffects
 ---@class CharacterStats
 ---@field fatigue number The character's fatigue at the end of the last stats calculation
@@ -24,10 +23,15 @@ local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 ---@field javaStats Stats The character's Stats object
 ---@field moodles Moodles The character's Moodles object
 ---
----@field maxWeightDelta number The character's carry weight multiplier, usually from traits
+---@field maxWeightDelta number The character's carry weight multiplier from traits
+---@field panicMultiplier number The character's panic multiplier from traits
+---@field thirstMultiplier number The character's thirst multiplier from traits
+---@field hungerMultiplier number The character's hunger multiplier from traits
+---@field sleepEfficiency number The character's sleeping efficiency
+---@field fatigueMultiplierAwake number The character's fatigue multiplier from traits while awake
+---@field fatigueMultiplierAsleep number The character's fatigue multiplier from traits while asleep
 ---@field panicIncrease number Multiplier on the character's panic increases
 ---@field panicReduction number Multiplier on the character's panic reductions
----@field panicMultiplier number Multiplier on
 ---
 ---@field forceWakeUp boolean Forces the character to wake up on the next frame if true
 ---@field forceWakeUpTime number Forces the character to wake up at this time if not nil
@@ -68,7 +72,9 @@ end
 
 ---@param self CharacterStats
 ---@param character IsoPlayer
+---@return CharacterStats
 CharacterStats.new = function(self, character)
+    ---@type CharacterStats
     local o = {}
     setmetatable(o, self)
     
@@ -89,6 +95,17 @@ CharacterStats.new = function(self, character)
     
     return o
 end
+
+CharacterStats.updateThirst = Thirst.updateThirst
+CharacterStats.updateHunger = Hunger.updateHunger
+CharacterStats.updatePanic = Panic.updatePanic
+CharacterStats.updateStress = Stress.updateStress
+CharacterStats.updateFatigue = Fatigue.updateFatigue
+CharacterStats.updateSleep = Fatigue.updateSleep
+CharacterStats.updateBoredom = Boredom.updateBoredom
+CharacterStats.getIdleBoredom = Boredom.getIdleBoredom
+CharacterStats.updateSadness = Sadness.updateSadness
+CharacterStats.updateCarryWeight = CarryWeight.updateCarryWeight
 
 ---@param self CharacterStats
 CharacterStats.updateEndurance = function(self)
@@ -115,17 +132,6 @@ CharacterStats.updateFitness = function(self)
     self.javaStats:setFitness(self.character:getPerkLevel(Perks.Fitness) / 5 - 1)
 end
 
-CharacterStats.updateThirst = Thirst.updateThirst
-CharacterStats.updateHunger = Hunger.updateHunger
-CharacterStats.updatePanic = Panic.updatePanic
-CharacterStats.updateStress = Stress.updateStress
-CharacterStats.updateFatigue = Fatigue.updateFatigue
-CharacterStats.updateSleep = Fatigue.updateSleep
-CharacterStats.updateBoredom = Boredom.updateBoredom
-CharacterStats.getIdleBoredom = Boredom.getIdleBoredom
-CharacterStats.updateSadness = Sadness.updateSadness
-CharacterStats.updateCarryWeight = CarryWeight.updateCarryWeight
-
 ---@param self CharacterStats
 CharacterStats.updateCache = function(self)
     self.asleep = self.character:isAsleep()
@@ -134,8 +140,14 @@ CharacterStats.updateCache = function(self)
     self.wellFed = self.moodles:getMoodleLevel(MoodleType.FoodEaten) ~= 0
 end
 
+---@param self CharacterStats
 CharacterStats.refreshTraits = function(self)
     self.maxWeightDelta = CarryWeight.getMaxWeightDelta(self.character)
+    self.panicMultiplier = Panic.getTraitMultiplier(self.character)
+    self.thirstMultiplier = Thirst.getThirstMultiplier(self.character)
+    self.hungerMultiplier = Hunger.getAppetiteMultiplier(self.character)
+    self.sleepEfficiency = Fatigue.getSleepEfficiency(self.character)
+    self.fatigueMultiplierAwake, self.fatigueMultiplierAsleep = Fatigue.getFatigueRates(self.character)
 end
 
 ---@param self CharacterStats
