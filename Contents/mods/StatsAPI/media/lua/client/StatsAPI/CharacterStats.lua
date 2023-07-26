@@ -1,6 +1,8 @@
 local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 
+local OverTimeEffects = require "StatsAPI/OverTimeEffects"
+
 local Thirst = require "StatsAPI/stats/Thirst"
 local Hunger = require "StatsAPI/stats/Hunger"
 local Panic = require "StatsAPI/stats/Panic"
@@ -9,8 +11,6 @@ local Fatigue = require "StatsAPI/stats/Fatigue"
 local Boredom = require "StatsAPI/stats/Boredom"
 local Sadness = require "StatsAPI/stats/Sadness"
 local CarryWeight = require "StatsAPI/stats/CarryWeight"
-
-local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 
 -- TODO: cache all the stats after they're applied so that we don't need to get them again for OverTimeEffects
 ---@class CharacterStats
@@ -22,6 +22,7 @@ local OverTimeEffects = require "StatsAPI/OverTimeEffects"
 ---@field bodyDamage BodyDamage The character's BodyDamage object
 ---@field javaStats Stats The character's Stats object
 ---@field moodles Moodles The character's Moodles object
+---@field luaMoodles LuaMoodles The character's LuaMoodles object
 ---
 ---@field maxWeightDelta number The character's carry weight multiplier from traits
 ---@field panicMultiplier number The character's panic multiplier from traits
@@ -70,6 +71,7 @@ CharacterStats.__newindex = function(self, key, value)
     end
 end
 
+---@private
 ---@param self CharacterStats
 ---@param character IsoPlayer
 ---@return CharacterStats
@@ -140,6 +142,8 @@ CharacterStats.updateCache = function(self)
     self.wellFed = self.moodles:getMoodleLevel(MoodleType.FoodEaten) ~= 0
 end
 
+-- TODO: this isn't called when the player's weight changes
+-- TODO: check java for other possible unhandled trait changes
 ---@param self CharacterStats
 CharacterStats.refreshTraits = function(self)
     self.maxWeightDelta = CarryWeight.getMaxWeightDelta(self.character)
@@ -196,13 +200,21 @@ local CharacterStatsMap = {}
 
 ---@param character IsoGameCharacter
 ---@return CharacterStats
+CharacterStats.create = function(character)
+    local stats = CharacterStats:new(character)
+    CharacterStatsMap[character] = stats
+    return stats
+end
+
+---@param character IsoGameCharacter
+---@return CharacterStats
 CharacterStats.getOrCreate = function(character)
-    local data = CharacterStatsMap[character]
-    if not data then
-        data = CharacterStats:new(character)
-        CharacterStatsMap[character] = data
+    local stats = CharacterStatsMap[character]
+    if not stats then
+        stats = CharacterStats:new(character)
+        CharacterStatsMap[character] = stats
     end
-    return data
+    return stats
 end
 
 ---@param character IsoGameCharacter
@@ -210,5 +222,23 @@ end
 CharacterStats.get = function(character)
     return CharacterStatsMap[character]
 end
+
+
+
+---@param character IsoPlayer
+CharacterStats.CalculateStats = function(character)
+    CharacterStats.get(character):CalculateStats()
+end
+
+Hook.CalculateStats.Add(CharacterStats.CalculateStats)
+
+---@param playerIndex int
+---@param player IsoPlayer
+CharacterStats.preparePlayer = function(playerIndex, player)
+    CharacterStats.create(player)
+    Panic.disableVanillaPanic(player)
+end
+
+Events.OnCreatePlayer.Add(CharacterStats.preparePlayer)
 
 return CharacterStats

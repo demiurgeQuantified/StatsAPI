@@ -9,24 +9,7 @@ local Panic = require "StatsAPI/stats/Panic"
 local CarryWeight = require "StatsAPI/stats/CarryWeight"
 
 local StatsAPI = {}
-
 StatsAPI.Stats = require "StatsAPI/Globals".Stats
-
----@param character IsoPlayer
-StatsAPI.CalculateStats = function(character)
-    CharacterStats.getOrCreate(character):CalculateStats()
-end
-
-Hook.CalculateStats.Add(StatsAPI.CalculateStats)
-
----@param playerIndex int
----@param player IsoPlayer
-StatsAPI.preparePlayer = function(playerIndex, player)
-    Panic.disableVanillaPanic(player)
-end
-
-Events.OnCreatePlayer.Add(StatsAPI.preparePlayer)
-
 
 ---Adds a fatigue multiplier to apply to characters who have the given trait.
 ---@param trait string The ID of the trait
