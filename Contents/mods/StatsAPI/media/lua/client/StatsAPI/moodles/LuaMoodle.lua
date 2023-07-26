@@ -4,6 +4,7 @@ local textManager = getTextManager()
 local FONT_HGT_SMALL = textManager:getFontHeight(UIFont.Small)
 
 ---@class LuaMoodle : ISUIElement
+---@field baseY number
 ---@field template MoodleTemplate
 ---@field texture Texture
 ---@field backgrounds table<Texture>
@@ -13,12 +14,15 @@ local FONT_HGT_SMALL = textManager:getFontHeight(UIFont.Small)
 local LuaMoodle = ISUIElement:derive("LuaMoodle")
 
 ---@param self LuaMoodle
+---@param x number
+---@param y number
 ---@param template MoodleTemplate
 ---@param parent LuaMoodles
-LuaMoodle.new = function(self, template, parent)
-    local o = ISUIElement:new(getCore():getScreenWidth() - 50, 100, 32 * parent.scale, 32 * parent.scale)
+LuaMoodle.new = function(self, x, y, template, parent)
+    local o = ISUIElement:new(x, y, 32 * parent.scale, 32 * parent.scale)
     setmetatable(o, self)
     
+    o.baseY = y
     o.template = template
     o.texture = template.texture
     o.backgrounds = template.backgrounds
@@ -50,7 +54,7 @@ end
 ---@param self LuaMoodle
 ---@param renderIndex int
 LuaMoodle.setRenderIndex = function(self, renderIndex)
-    self:setY(100 + self.parent.gap * self.parent.scale * (renderIndex - 1))
+    self:setY(self.baseY + self.parent.spacing * self.parent.scale * (renderIndex - 1))
 end
 
 ---@param self LuaMoodle
