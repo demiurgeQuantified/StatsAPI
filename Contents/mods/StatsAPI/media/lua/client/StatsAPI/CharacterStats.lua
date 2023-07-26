@@ -2,6 +2,7 @@ local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 
 local OverTimeEffects = require "StatsAPI/OverTimeEffects"
+local LuaMoodles = require "StatsAPI/moodles/LuaMoodles"
 
 local Thirst = require "StatsAPI/stats/Thirst"
 local Hunger = require "StatsAPI/stats/Hunger"
@@ -226,16 +227,17 @@ end
 
 
 ---@param character IsoPlayer
-CharacterStats.CalculateStats = function(character)
+CharacterStats.OnCalculateStats = function(character)
     CharacterStats.get(character):CalculateStats()
 end
 
-Hook.CalculateStats.Add(CharacterStats.CalculateStats)
+Hook.CalculateStats.Add(CharacterStats.OnCalculateStats)
 
 ---@param playerIndex int
 ---@param player IsoPlayer
 CharacterStats.preparePlayer = function(playerIndex, player)
-    CharacterStats.create(player)
+    local stats = CharacterStats.create(player)
+    CharacterStats.luaMoodles = LuaMoodles.create(stats)
     Panic.disableVanillaPanic(player)
 end
 
