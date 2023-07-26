@@ -96,6 +96,22 @@ LuaMoodles.create = function(playerNum)
     return moodles
 end
 
+---@param self LuaMoodles
+LuaMoodles.cleanup = function(self)
+    for _,moodle in pairs(self.moodles) do
+        moodle:cleanup()
+    end
+    LuaMoodles.instanceMap[self.playerNum] = nil
+end
+
+---@param self LuaMoodles
+LuaMoodles.onDeath = function(self)
+    for i = #self.showingMoodles, 1, -1 do
+        self.showingMoodles[i]:setLevel(0)
+    end
+    self.moodles.dead:setLevel(4)
+end
+
 
 
 LuaMoodles.disableVanillaMoodles = function()

@@ -55,5 +55,8 @@ MoodleTemplate:new("foodeaten", "media/ui/Moodles/Moodle_Icon_Hungry.png", Moodl
                     {name=getText("Moodles_foodeaten_lvl3"), desc=getText("Moodles_foodeaten_desc_lvl3")},
                     {name=getText("Moodles_foodeaten_lvl4"), desc=getText("Moodles_foodeaten_desc_lvl4")}})
 
+MoodleTemplate:new("dead", "media/ui/Moodles/Moodle_Icon_Dead.png", MoodleTemplate.Backgrounds.Negative,
+                   {{name=getText("Moodles_dead_lvl1"), desc=getText("Moodles_dead_desc_lvl1")}})
+
 
 return MoodleTemplate

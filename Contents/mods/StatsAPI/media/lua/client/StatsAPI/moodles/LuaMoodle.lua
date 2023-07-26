@@ -50,18 +50,28 @@ LuaMoodle.new = function(self, x, y, template, parent)
 end
 
 ---@param self LuaMoodle
+LuaMoodle.show = function(self)
+    self:addToUIManager()
+    self.parent:showMoodle(self)
+end
+
+---@param self LuaMoodle
+LuaMoodle.hide = function(self)
+    self:removeFromUIManager()
+    self.parent:hideMoodle(self)
+end
+
+---@param self LuaMoodle
 ---@param level int
 LuaMoodle.setLevel = function(self, level)
     local showing = self.level > 0
     if not showing then
         if level > 0 then
-            self:addToUIManager()
-            self.parent:showMoodle(self)
+            self:show()
         end
     else
         if level <= 0 then
-            self:removeFromUIManager()
-            self.parent:hideMoodle(self)
+            self:hide()
         else
             self:wiggle()
         end
@@ -102,8 +112,9 @@ LuaMoodle.render = function(self)
     end
     
     if self:isMouseOver() then
-        local name = self.template.text[self.level].name
-        local desc = self.template.text[self.level].desc
+        local translation = self.template.text[self.level] or self.template.text[1]
+        local name = translation.name
+        local desc = translation.desc
         local length = Math.max(textManager:MeasureStringX(UIFont.Small, name), textManager:MeasureStringX(UIFont.Small, desc))
         self:drawTextureScaled(nil, -16 - length, -1, length + 12, (2 + FONT_HGT_SMALL) * 2, 0.6, 0, 0, 0)
         self:drawTextRight(name, -10, 1, 1, 1, 1, 1, UIFont.Small)
@@ -114,6 +125,13 @@ end
 ---@param self LuaMoodle
 LuaMoodle.wiggle = function(self)
     self.oscillationLevel = 1
+end
+
+---@param self LuaMoodle
+LuaMoodle.cleanup = function(self)
+    self:removeFromUIManager()
+    self.javaObject:setTable(nil)
+    self.javaObject = nil
 end
 
 LuaMoodle.updateOscillator = function()

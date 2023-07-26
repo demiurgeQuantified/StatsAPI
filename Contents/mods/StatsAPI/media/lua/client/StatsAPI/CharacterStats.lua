@@ -237,6 +237,9 @@ Hook.CalculateStats.Add(CharacterStats.OnCalculateStats)
 ---@param player IsoPlayer
 CharacterStats.preparePlayer = function(playerIndex, player)
     local stats = CharacterStats.create(player)
+    if LuaMoodles.instanceMap[playerIndex] then
+        LuaMoodles.instanceMap[playerIndex]:cleanup()
+    end
     stats.luaMoodles = LuaMoodles.create(playerIndex)
     stats.luaMoodles.moodles.stress:setLevel(1)
     stats.luaMoodles.moodles.foodeaten:setLevel(2)
@@ -247,7 +250,8 @@ Events.OnCreatePlayer.Add(CharacterStats.preparePlayer)
 
 ---@param player IsoPlayer
 CharacterStats.cleanupPlayer = function(player)
-    CharacterStats[player] = nil
+    local stats = CharacterStats.get(player)
+    stats.luaMoodles:onDeath()
 end
 Events.OnPlayerDeath.Add(CharacterStats.cleanupPlayer)
 
