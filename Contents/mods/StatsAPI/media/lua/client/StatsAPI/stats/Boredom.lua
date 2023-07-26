@@ -44,7 +44,7 @@ Boredom.updateBoredom = function(self)
             boredomChange = boredomChange - Boredom.BoredomDecrease * 0.10000000149011612
         end
     elseif self.vehicle then
-        if Math.abs(self.vehicle:getCurrentSpeedKmHour() <= 0.1) then
+        if Math.abs(self.vehicle:getCurrentSpeedKmHour()) <= 0.1 then
             boredomChange = self:getIdleBoredom()
         else
             boredomChange = -Boredom.BoredomDecrease * 0.5
