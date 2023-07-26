@@ -65,7 +65,7 @@ end
 ---@param self LuaMoodles
 LuaMoodles.adjustPosition = function(self)
     local x = core:getScreenWidth()
-    if self.playerNum == 0 or self.playerNum == 2 then
+    if getNumActivePlayers() > 1 and self.playerNum == 0 or self.playerNum == 2 then
         x = x / 2
     end
     x = x - LuaMoodles.rightOffset
@@ -106,5 +106,17 @@ LuaMoodles.disableVanillaMoodles = function()
 end
 
 Events.OnGameStart.Add(LuaMoodles.disableVanillaMoodles)
+
+Events.OnTickEvenPaused.Add(function()
+    for i = 0, 3 do
+        ---@type LuaMoodles
+        local moodles = LuaMoodles.instanceMap[i]
+        if moodles then
+            for j = 1, #moodles.showingMoodles do
+                moodles.showingMoodles[j]:updateOscillationLevel()
+            end
+        end
+    end
+end)
 
 return LuaMoodles

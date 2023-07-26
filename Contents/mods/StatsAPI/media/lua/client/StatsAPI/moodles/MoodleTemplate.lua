@@ -18,6 +18,9 @@ MoodleTemplate.Backgrounds = {
         getTexture("media/ui/Moodles/Moodle_Bkg_Bad_2.png"),
         getTexture("media/ui/Moodles/Moodle_Bkg_Bad_3.png"),
         getTexture("media/ui/Moodles/Moodle_Bkg_Bad_4.png")
+    },
+    Neutral = {
+        getTexture("media/ui/Moodles/Moodle_Bkg_Bad_1.png")
     }
 }
 

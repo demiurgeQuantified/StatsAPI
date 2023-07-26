@@ -8,6 +8,7 @@ Globals.deltaMinutesPerDay = 0
 Globals.delta = 0
 Globals.statsDecreaseMultiplier = 1
 Globals.gameWorldSecondsSinceLastUpdate = 0
+Globals.FPSMultiplier = 0
 
 -- EvenPaused because it fires before player stat calculations, OnTick fires after
 -- unfortunately, GameTime updates after this, so we're technically always a frame behind, but it doesn't really matter
@@ -16,6 +17,7 @@ Events.OnTickEvenPaused.Add(function()
     Globals.delta = Globals.multiplier * Globals.deltaMinutesPerDay
     Globals.statsDecreaseMultiplier = Globals.sandboxOptions:getStatsDecreaseMultiplier()
     Globals.gameWorldSecondsSinceLastUpdate = Globals.gameTime:getGameWorldSecondsSinceLastUpdate()
+    Globals.FPSMultiplier = Globals.gameTime.FPSMultiplier -- this might seem unnecessary, but java field accesses are disguised method calls
 end)
 
 

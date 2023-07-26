@@ -1,3 +1,4 @@
+local Globals = require "StatsAPI/Globals"
 local Math = require "StatsAPI/lib/Math"
 
 local textManager = getTextManager()
@@ -11,7 +12,10 @@ local FONT_HGT_SMALL = textManager:getFontHeight(UIFont.Small)
 ---@field level int
 ---@field renderIndex int
 ---@field parent LuaMoodles
+---@field oscillationLevel number
 local LuaMoodle = ISUIElement:derive("LuaMoodle")
+LuaMoodle.oscillator = 0
+LuaMoodle.oscillatorStep = 0
 
 ---@param self LuaMoodle
 ---@param x number
@@ -26,9 +30,11 @@ LuaMoodle.new = function(self, x, y, template, parent)
     o.template = template
     o.texture = template.texture
     o.backgrounds = template.backgrounds
-    o.renderIndex = 1
-    o.level = 0
     o.parent = parent
+    
+    o.level = 0
+    o.renderIndex = 1
+    o.oscillationLevel = 0
     
     return o
 end
@@ -46,6 +52,8 @@ LuaMoodle.setLevel = function(self, level)
         if level <= 0 then
             self:removeFromUIManager()
             self.parent:hideMoodle(self)
+        else
+            self:wiggle()
         end
     end
     self.level = level
@@ -58,9 +66,20 @@ LuaMoodle.setRenderIndex = function(self, renderIndex)
 end
 
 ---@param self LuaMoodle
+LuaMoodle.updateOscillationLevel = function(self)
+    if self.oscillationLevel > 0 then
+        self.oscillationLevel = self.oscillationLevel - self.oscillationLevel * 0.04 / Globals.FPSMultiplier
+        if self.oscillationLevel < 0.01 then
+            self.oscillationLevel = 0
+        end
+    end
+end
+
+---@param self LuaMoodle
 LuaMoodle.render = function(self)
-    self:drawTextureScaledUniform(self.backgrounds[self.level], 0, 0, self.parent.scale, 1, 1, 1, 1)
-    self:drawTextureScaledUniform(self.texture, 0, 0, self.parent.scale, 1, 1, 1, 1)
+    local x = LuaMoodle.oscillator * self.oscillationLevel
+    self:drawTextureScaledUniform(self.backgrounds[self.level] or self.backgrounds[1], x, 0, self.parent.scale, 1, 1, 1, 1)
+    self:drawTextureScaledUniform(self.texture, x, 0, self.parent.scale, 1, 1, 1, 1)
     if self:isMouseOver() then
         local name = self.template.text[self.level].name
         local desc = self.template.text[self.level].desc
@@ -70,5 +89,17 @@ LuaMoodle.render = function(self)
         self:drawTextRight(desc, -10, FONT_HGT_SMALL + 1, 0.8, 0.8, 0.8, 1.0, UIFont.Small)
     end
 end
+
+---@param self LuaMoodle
+LuaMoodle.wiggle = function(self)
+    self.oscillationLevel = 1
+end
+
+LuaMoodle.updateOscillator = function()
+    LuaMoodle.oscillatorStep = LuaMoodle.oscillatorStep + 0.4 * UIManager.getMillisSinceLastRender() / 33.3
+    LuaMoodle.oscillator = math.sin(LuaMoodle.oscillatorStep) * 15.6
+end
+
+Events.OnPreUIDraw.Add(LuaMoodle.updateOscillator)
 
 return LuaMoodle
