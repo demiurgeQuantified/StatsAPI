@@ -3,37 +3,66 @@ local LuaMoodle = require "StatsAPI/moodles/LuaMoodle"
 
 ---@class LuaMoodles
 ---@field stats CharacterStats
----@field moodles table<LuaMoodle>
+---@field moodles table<string, LuaMoodle>
+---@field showingMoodles table<LuaMoodle>
 local LuaMoodles = {}
+---@type table<LuaMoodles>
 LuaMoodles.instanceMap = {}
-LuaMoodles.scale = 2
-LuaMoodles.gap = 16
+LuaMoodles.scale = 1
+LuaMoodles.gap = 36
 
 ---@private
 ---@param self LuaMoodles
----@param stats CharacterStats
-LuaMoodles.new = function(self, stats)
+LuaMoodles.new = function(self)
     local o = {}
     setmetatable(o, self)
     
-    o.stats = stats
+    o.showingMoodles = {}
     o.moodles = {}
     for i = 1, #MoodleTemplate.templates do
-        local moodle = LuaMoodle:new(MoodleTemplate.templates[i])
-        o.moodles[i] = moodle
-        moodle:initialise()
-        moodle:addToUIManager()
+        ---@type MoodleTemplate
+        local template = MoodleTemplate.templates[i]
+        local moodle = LuaMoodle:new(template, o)
+        o.moodles[template.type] = moodle
     end
     
     return o
 end
 
----@param stats CharacterStats
-LuaMoodles.create = function(stats)
+---@param self LuaMoodles
+---@param moodle LuaMoodle
+LuaMoodles.showMoodle = function(self, moodle)
+    table.insert(self.showingMoodles, moodle)
+    self:sortMoodles()
+end
+
+---@param self LuaMoodles
+---@param moodle LuaMoodle
+LuaMoodles.hideMoodle = function(self, moodle)
+    for i = 1, #self.showingMoodles do
+        if self.showingMoodles[i] == moodle then
+            table.remove(self.showingMoodles, i)
+            break
+        end
+    end
+    self:sortMoodles()
+end
+
+---@param self LuaMoodles
+LuaMoodles.sortMoodles = function(self)
+    for i = 1, #self.showingMoodles do
+        self.showingMoodles[i]:setRenderIndex(i)
+    end
+end
+
+---@param playerNum int
+LuaMoodles.create = function(playerNum)
     local moodles = LuaMoodles:new()
-    LuaMoodles.instanceMap[stats.playerNum] = moodles
+    LuaMoodles.instanceMap[playerNum] = moodles
     return moodles
 end
+
+
 
 LuaMoodles.disableVanillaMoodles = function()
     local ui = UIManager.getUI()

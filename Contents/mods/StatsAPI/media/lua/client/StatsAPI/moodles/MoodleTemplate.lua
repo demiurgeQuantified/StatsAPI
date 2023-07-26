@@ -4,6 +4,7 @@
 ---@field text table<int<string,string>>
 ---@field backgrounds table<int,string>
 local MoodleTemplate = {}
+---@type table<MoodleTemplate>
 MoodleTemplate.templates = {}
 MoodleTemplate.Backgrounds = {
     Positive = {
@@ -40,6 +41,16 @@ end
 
 -- TODO: when this is more complete, an API should be created and this should be moved to VanillaMoodles.lua
 MoodleTemplate:new("stress", "media/ui/Moodles/Moodle_Icon_Stressed.png", MoodleTemplate.Backgrounds.Negative,
-                   {{name=getText("Moodles_stress_lvl1"), desc=getText("Moodles_stress_desc_lvl1")}})
+                   {{name=getText("Moodles_stress_lvl1"), desc=getText("Moodles_stress_desc_lvl1")},
+                    {name=getText("Moodles_stress_lvl2"), desc=getText("Moodles_stress_desc_lvl2")},
+                    {name=getText("Moodles_stress_lvl3"), desc=getText("Moodles_stress_desc_lvl3")},
+                    {name=getText("Moodles_stress_lvl4"), desc=getText("Moodles_stress_desc_lvl4")}})
+
+MoodleTemplate:new("foodeaten", "media/ui/Moodles/Moodle_Icon_Hungry.png", MoodleTemplate.Backgrounds.Positive,
+                   {{name=getText("Moodles_foodeaten_lvl1"), desc=getText("Moodles_foodeaten_desc_lvl1")},
+                    {name=getText("Moodles_foodeaten_lvl2"), desc=getText("Moodles_foodeaten_desc_lvl2")},
+                    {name=getText("Moodles_foodeaten_lvl3"), desc=getText("Moodles_foodeaten_desc_lvl3")},
+                    {name=getText("Moodles_foodeaten_lvl4"), desc=getText("Moodles_foodeaten_desc_lvl4")}})
+
 
 return MoodleTemplate

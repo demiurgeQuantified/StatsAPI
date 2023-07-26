@@ -237,7 +237,9 @@ Hook.CalculateStats.Add(CharacterStats.OnCalculateStats)
 ---@param player IsoPlayer
 CharacterStats.preparePlayer = function(playerIndex, player)
     local stats = CharacterStats.create(player)
-    CharacterStats.luaMoodles = LuaMoodles.create(stats)
+    stats.luaMoodles = LuaMoodles.create(playerIndex)
+    stats.luaMoodles.moodles.stress:setLevel(1)
+    stats.luaMoodles.moodles.foodeaten:setLevel(2)
     Panic.disableVanillaPanic(player)
 end
 
