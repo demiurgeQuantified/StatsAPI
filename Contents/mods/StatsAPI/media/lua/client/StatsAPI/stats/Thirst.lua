@@ -21,16 +21,14 @@ end
 Thirst.updateThirst = function(self)
     if not self.character:isGhostMode() then
         local thirstMultiplier = self.thirstMultiplier * Globals.statsDecreaseMultiplier * Globals.delta
-        local thirst = self.javaStats:getThirst()
         if not self.asleep then
             if self.character:isRunning() then
                 thirstMultiplier = thirstMultiplier * 1.2
             end
-            thirst = thirst + ZomboidGlobals.ThirstIncrease * self.character:getThirstMultiplier() * thirstMultiplier
+            self.stats.thirst = self.stats.thirst + ZomboidGlobals.ThirstIncrease * self.character:getThirstMultiplier() * thirstMultiplier
         else
-            thirst = thirst + ZomboidGlobals.ThirstSleepingIncrease * thirstMultiplier
+            self.stats.thirst = self.stats.thirst + ZomboidGlobals.ThirstSleepingIncrease * thirstMultiplier
         end
-        self.javaStats:setThirst(Math.min(thirst, 1))
     end
     self.character:autoDrink()
 end

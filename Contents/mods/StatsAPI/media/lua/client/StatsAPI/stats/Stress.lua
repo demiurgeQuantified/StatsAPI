@@ -56,16 +56,13 @@ end
 
 ---@param self CharacterStats
 Stress.updateStress = function(self)
-    local stress = self.javaStats.stress
-    stress = stress + worldSoundManager:getStressFromSounds(self.character:getX(), self.character:getY(), self.character:getZ()) * ZomboidGlobals.StressFromSoundsMultiplier
-    stress = stress + Stress.getHealthStress(self.character)
-    stress = stress + Stress.getTraitStress(self.character)
-    stress = stress + Stress.getModdedStressChange()
+    self.stats.stress = self.stats.stress + worldSoundManager:getStressFromSounds(self.character:getX(), self.character:getY(), self.character:getZ()) * ZomboidGlobals.StressFromSoundsMultiplier
+    self.stats.stress = self.stats.stress + Stress.getHealthStress(self.character)
+    self.stats.stress = self.stats.stress + Stress.getTraitStress(self.character)
+    self.stats.stress = self.stats.stress + Stress.getModdedStressChange()
     if not self.asleep then
-        stress = stress - ZomboidGlobals.StressDecrease * Globals.delta
+        self.stats.stress = self.stats.stress - ZomboidGlobals.StressDecrease * Globals.delta
     end
-    
-    self.javaStats:setStress(Math.clamp(stress, 0, 1))
 end
 
 return Stress

@@ -20,8 +20,7 @@ end
 
 ---@param self CharacterStats
 Hunger.updateHunger = function(self)
-    local hunger = self.javaStats:getHunger()
-    local appetiteMultiplier = (1 - hunger) * self.hungerMultiplier
+    local appetiteMultiplier = (1 - self.stats.hunger) * self.hungerMultiplier
     local hungerChange = 0
     
     if not self.asleep then
@@ -48,7 +47,7 @@ Hunger.updateHunger = function(self)
         end
     end
     
-    self.javaStats:setHunger(Math.min(hunger + hungerChange, 1))
+    self.stats.hunger = self.stats.hunger + hungerChange
 end
 
 return Hunger

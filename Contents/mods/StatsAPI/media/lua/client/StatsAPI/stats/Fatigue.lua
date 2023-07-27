@@ -50,7 +50,7 @@ end
 ---@param bedType string
 ---@return number
 Fatigue.getSleepDuration = function(self, bedType)
-    local sleepLength = ZombRand(self.fatigue * 10, self.fatigue * 13) + 1;
+    local sleepLength = ZombRand(self.stats.fatigue * 10, self.stats.fatigue * 13) + 1;
     
     if bedType == "goodBed" then
         sleepLength = sleepLength -1;
@@ -90,33 +90,24 @@ end
 
 ---@param self CharacterStats
 Fatigue.updateFatigue = function(self)
-    local fatigue = self.javaStats:getFatigue()
     if self.asleep then
-        if fatigue > 0 then
+        if self.stats.fatigue > 0 then
             local bedMultiplier = Fatigue.bedEfficiency[self.character:getBedType()] or 1
         
             local fatigueDelta = 1 / Globals.gameTime:getMinutesPerDay() / 60 * Globals.multiplier / 2
         
             local fatigueDecrease = 0
-            if fatigue <= 0.3 then
+            if self.stats.fatigue <= 0.3 then
                 fatigueDecrease = fatigueDelta / (self.fatigueMultiplierAsleep * 7) * 0.3
             else
                 fatigueDecrease = fatigueDelta / (self.fatigueMultiplierAsleep * 5) * 0.7
             end
-            fatigueDecrease = fatigueDecrease * self.sleepEfficiency * bedMultiplier
-            self.fatigue = Math.max(fatigue - fatigueDecrease, 0)
-        else
-            self.fatigue = fatigue
-            return
+            self.stats.fatigue = self.stats.fatigue - fatigueDecrease * self.sleepEfficiency * bedMultiplier
         end
     else
-        -- TODO: cache endurance
-        local enduranceMultiplier = Math.max(1 - self.javaStats:getEndurance(), 0.3)
-        local fatigueChange = ZomboidGlobals.FatigueIncrease * Globals.statsDecreaseMultiplier * enduranceMultiplier * Globals.delta * self.fatigueMultiplierAwake * self.character:getFatiqueMultiplier()
-    
-        self.fatigue = Math.min(fatigue + fatigueChange, 1)
+        local enduranceMultiplier = Math.max(1 - self.stats.endurance, 0.3)
+        self.stats.fatigue = self.stats.fatigue + ZomboidGlobals.FatigueIncrease * Globals.statsDecreaseMultiplier * enduranceMultiplier * Globals.delta * self.fatigueMultiplierAwake * self.character:getFatiqueMultiplier()
     end
-    self.javaStats:setFatigue(self.fatigue)
 end
 
 ---@param self CharacterStats
@@ -176,7 +167,7 @@ Fatigue.canSleep = function(self)
     end
     
     if self.character:getSleepingTabletEffect() < 2000 then
-        if self.luaMoodles.moodles.pain.level >= 2 and self.fatigue <= 0.85 then
+        if self.luaMoodles.moodles.pain.level >= 2 and self.stats.fatigue <= 0.85 then
             return false, getText("ContextMenu_PainNoSleep")
         end
         if self.luaMoodles.moodles.panic.level >= 1 then
