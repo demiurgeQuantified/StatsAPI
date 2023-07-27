@@ -27,9 +27,7 @@ Sadness.updateSadness = function(self)
     
     if sadnessChange == 0 then return end
     
-    sadnessChange = sadnessChange * Globals.multiplier
-    
-    self.bodyDamage:setUnhappynessLevel(Math.clamp(self.bodyDamage:getUnhappynessLevel() + sadnessChange, 0, 100))
+    self.stats.sadness = self.stats.sadness + sadnessChange * Globals.multiplier
 end
 
 return Sadness

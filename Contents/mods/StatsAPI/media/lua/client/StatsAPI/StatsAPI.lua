@@ -9,7 +9,6 @@ local Panic = require "StatsAPI/stats/Panic"
 local CarryWeight = require "StatsAPI/stats/CarryWeight"
 
 local StatsAPI = {}
-StatsAPI.Stats = require "StatsAPI/Globals".Stats
 
 ---Adds a fatigue multiplier to apply to characters who have the given trait.
 ---@param trait string The ID of the trait
@@ -65,7 +64,7 @@ end
 
 ---Adds an amount of a stat to a character over the specified time in real seconds, adjusted by day length.
 ---@param character IsoGameCharacter The character to apply the effect to
----@param stat StatIdentifier The stat to add to
+---@param stat string The stat to add to
 ---@param total number The total amount of the stat to add
 ---@param time number The time in seconds it should take to complete the effect
 StatsAPI.addOverTimeEffect = function(character, stat, total, time)
@@ -75,7 +74,7 @@ end
 
 ---Adds an amount of a stat to a character over the specified time in game-world hours.
 ---@param character IsoGameCharacter The character to apply the effect to
----@param stat StatIdentifier The stat to add to
+---@param stat string The stat to add to
 ---@param total number The total amount of the stat to add
 ---@param time number The time in seconds it should take to complete the effect
 StatsAPI.addOverTimeEffectHours = function(character, stat, total, time)
@@ -84,7 +83,7 @@ end
 
 ---Adds a constant amount of the stat to the character for the duration in seconds.
 ---@param character IsoGameCharacter The character to apply the effect to
----@param stat StatIdentifier The stat to add to
+---@param stat string The stat to add to
 ---@param amount number The amount of the stat to add every second
 ---@param duration number The number of seconds the effect should be active
 StatsAPI.addConstantEffect = function(character, stat, amount, duration)
@@ -94,7 +93,7 @@ end
 
 ---Adds a constant amount of the stat to the character for the duration in hours.
 ---@param character IsoGameCharacter The character to apply the effect to
----@param stat StatIdentifier The stat to add to
+---@param stat string The stat to add to
 ---@param amount number The amount of the stat to add every hour
 ---@param duration number The number of hours the effect should be active
 StatsAPI.addConstantEffectHours = function(character, stat, amount, duration)

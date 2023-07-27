@@ -1,7 +1,7 @@
 local Math = require "StatsAPI/lib/Math"
 local Globals = require "StatsAPI/Globals"
 
-local OverTimeEffects = require "StatsAPI/OverTimeEffects"
+local StatsContainer = require "StatsAPI/StatsContainer"
 
 local Thirst = require "StatsAPI/stats/Thirst"
 local Hunger = require "StatsAPI/stats/Hunger"
@@ -14,8 +14,7 @@ local CarryWeight = require "StatsAPI/stats/CarryWeight"
 
 -- TODO: cache all the stats after they're applied so that we don't need to get them again for OverTimeEffects
 ---@class CharacterStats
----@field fatigue number The character's fatigue at the end of the last stats calculation
----@field panic number The character's panic at the end of the last stats calculation
+---@field stats StatsContainer The character's stats
 ---
 ---@field character IsoGameCharacter The character this StatsData belongs to
 ---@field playerNum int The character's playerNum
@@ -85,6 +84,7 @@ CharacterStats.new = function(self, character)
     o.bodyDamage = character:getBodyDamage()
     o.moodles = character:getMoodles()
     o.javaStats = character:getStats()
+    o.stats = StatsContainer:new(o.javaStats, o.bodyDamage)
     
     local modData = character:getModData()
     modData.StatsAPI = modData.StatsAPI or {}
@@ -112,21 +112,17 @@ CharacterStats.updateCarryWeight = CarryWeight.updateCarryWeight
 ---@param self CharacterStats
 CharacterStats.updateEndurance = function(self)
     if self.character:isUnlimitedEndurance() then
-        self.javaStats:setEndurance(1)
+        self.stats.endurance = 1
         return
     end
-    
-    local endurance = self.javaStats:getEndurance()
     
     if self.asleep then
         local enduranceMultiplier = 2
         if IsoPlayer.allPlayersAsleep() then
             enduranceMultiplier = enduranceMultiplier * Globals.deltaMinutesPerDay
         end
-        endurance = endurance + ZomboidGlobals.ImobileEnduranceIncrease * Globals.sandboxOptions:getEnduranceRegenMultiplier() * self.character:getRecoveryMod() * Globals.multiplier * enduranceMultiplier
+        self.stats.endurance = self.stats.endurance + ZomboidGlobals.ImobileEnduranceIncrease * Globals.sandboxOptions:getEnduranceRegenMultiplier() * self.character:getRecoveryMod() * Globals.multiplier * enduranceMultiplier
     end
-    
-    self.javaStats:setEndurance(Math.clamp(endurance, 0, 1))
 end
 
 ---@param self CharacterStats
@@ -156,6 +152,7 @@ end
 
 ---@param self CharacterStats
 CharacterStats.CalculateStats = function(self)
+    self.stats:fromJava()
     self:updateCache()
 
     -- Stats stats
@@ -178,6 +175,8 @@ CharacterStats.CalculateStats = function(self)
     self:applyOverTimeEffects()
     
     self:updateCarryWeight()
+    
+    self.stats:toJava()
 end
 
 ---@param self CharacterStats
@@ -191,7 +190,7 @@ CharacterStats.applyOverTimeEffects = function(self)
             table.remove(self.overTimeEffects, j)
             delta = delta + effect.timeRemaining
         end
-        OverTimeEffects.statSetters[effect.stat](self, effect.amount * delta)
+        self.stats[effect.stat] = self.stats[effect.stat] + effect.amount * delta
     end
 end
 
@@ -226,11 +225,11 @@ end
 
 
 ---@param character IsoPlayer
-CharacterStats.CalculateStats = function(character)
+CharacterStats.OnCalculateStats = function(character)
     CharacterStats.get(character):CalculateStats()
 end
 
-Hook.CalculateStats.Add(CharacterStats.CalculateStats)
+Hook.CalculateStats.Add(CharacterStats.OnCalculateStats)
 
 ---@param playerIndex int
 ---@param player IsoPlayer

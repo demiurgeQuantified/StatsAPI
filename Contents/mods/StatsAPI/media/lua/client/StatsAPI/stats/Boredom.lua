@@ -27,8 +27,8 @@ end
 Boredom.updateBoredom = function(self)
     if self.asleep then return end
     
-    if self.panic > 5 then
-        self.bodyDamage:setBoredomLevel(0)
+    if self.stats.panic > 5 then
+        self.stats.boredom = 0
         return
     end
     
@@ -41,7 +41,7 @@ Boredom.updateBoredom = function(self)
         end
         
         if self.character:getNumSurvivorsInVicinity() > 0 then
-            boredomChange = boredomChange - Boredom.BoredomDecrease * 0.10000000149011612
+            boredomChange = boredomChange - Boredom.BoredomDecrease * 0.1
         end
     elseif self.vehicle then
         if Math.abs(self.vehicle:getCurrentSpeedKmHour()) <= 0.1 then
@@ -50,16 +50,14 @@ Boredom.updateBoredom = function(self)
             boredomChange = -Boredom.BoredomDecrease * 0.5
         end
     else
-        boredomChange = -Boredom.BoredomDecrease * 0.10000000149011612
+        boredomChange = -Boredom.BoredomDecrease * 0.1
     end
     
     if self.javaStats:getDrunkenness() > 20 then
         boredomChange = boredomChange - Boredom.BoredomDecrease * 2
     end
-
-    boredomChange = boredomChange * Globals.multiplier
     
-    self.bodyDamage:setBoredomLevel(Math.clamp(self.bodyDamage:getBoredomLevel() + boredomChange, 0, 100))
+    self.stats.boredom = self.stats.boredom + boredomChange * Globals.multiplier
 end
 
 return Boredom
