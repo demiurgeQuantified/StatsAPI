@@ -204,6 +204,12 @@ StatsAPI.getMoodleLevel = function(player, moodleType)
     return CharacterStats.get(player).luaMoodles.moodles[moodleType].level
 end
 
+---@param player IsoPlayer The player whose moodle to wiggle.
+---@param moodleType string The type of moodle to wiggle.
+StatsAPI.wiggleMoodle = function(player, moodleType)
+    CharacterStats.get(player).luaMoodles.moodles[moodleType]:wiggle()
+end
+
 ---@param player IsoPlayer The player whose moodle to change.
 ---@param moodleType string The type of moodle to change.
 ---@param numChevrons int The amount of chevrons to display.
