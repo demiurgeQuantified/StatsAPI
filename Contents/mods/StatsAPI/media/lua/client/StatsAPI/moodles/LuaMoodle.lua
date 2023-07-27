@@ -18,10 +18,13 @@ local chevronTextures = {up = {getTexture("media/ui/Moodle_chevron_up.png"), get
 ---@field oscillationLevel number
 ---@field chevronCount number
 ---@field chevronUp boolean
----@field chevronColor table<float>
+---@field chevronPositive boolean
 local LuaMoodle = ISUIElement:derive("LuaMoodle")
 LuaMoodle.oscillator = 0
 LuaMoodle.oscillatorStep = 0
+
+LuaMoodle.colourNegative = {0.88235295, 0.15686275, 0.15686275, 1}
+LuaMoodle.colourPositive = {0.15686275, 0.88235295, 0.15686275, 1}
 
 ---@param self LuaMoodle
 ---@param x number
@@ -41,7 +44,7 @@ LuaMoodle.new = function(self, x, y, template, parent)
     o.level = 0
     o.chevronCount = 0
     o.chevronUp = true
-    o.chevronColor = {1, 1, 1, 1}
+    o.chevronPositive = true
     
     o.renderIndex = 1
     o.oscillationLevel = 0
@@ -99,17 +102,18 @@ end
 
 ---@param self LuaMoodle
 LuaMoodle.render = function(self)
-    local x = LuaMoodle.oscillator * self.oscillationLevel
+    local x = LuaMoodle.oscillator * self.oscillationLevel * self.parent.scale
     
     self:drawTextureScaledUniform(self.backgrounds[self.level] or self.backgrounds[1], x, 0, self.parent.scale, 1, 1, 1, 1)
     self:drawTextureScaledUniform(self.texture, x, 0, self.parent.scale, 1, 1, 1, 1)
     
     if self.chevronCount > 0 then
         local tex = chevronTextures[self.chevronUp and "up" or "down"]
+        local r, g, b, a = unpack(self.chevronPositive and LuaMoodle.colourPositive or LuaMoodle.colourNegative)
         for i = 1, self.chevronCount do
             local y = 24 - i * 4
-            self:drawTextureScaledUniform(tex[1], x + 16, y, self.parent.scale, unpack(self.chevronColor))
-            self:drawTextureScaledUniform(tex[2], x + 16, y, self.parent.scale, unpack(self.chevronColor))
+            self:drawTextureScaledUniform(tex[1], x + 16 * self.parent.scale, y, self.parent.scale, a, r, g, b)
+            self:drawTextureScaledUniform(tex[2], x + 16 * self.parent.scale, y, self.parent.scale, a, r, g, b)
         end
     end
     
@@ -124,6 +128,7 @@ LuaMoodle.render = function(self)
     end
 end
 
+-- TODO: this isn't triggered during combat like in vanilla
 ---@param self LuaMoodle
 LuaMoodle.wiggle = function(self)
     self.oscillationLevel = 1

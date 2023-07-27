@@ -13,7 +13,7 @@ local LuaMoodles = {}
 LuaMoodles.instanceMap = {}
 LuaMoodles.scale = 1
 LuaMoodles.spacing = 36
-LuaMoodles.rightOffset = 50
+LuaMoodles.rightOffset = 18
 LuaMoodles.topOffset = 100
 
 ---@private
@@ -67,14 +67,14 @@ end
 ---@param self LuaMoodles
 LuaMoodles.adjustPosition = function(self)
     local x = core:getScreenWidth()
-    if getNumActivePlayers() > 1 and self.playerNum == 0 or self.playerNum == 2 then
+    if getNumActivePlayers() > 1 and (self.playerNum == 0 or self.playerNum == 2) then
         x = x / 2
     end
-    x = x - LuaMoodles.rightOffset
+    x = x - LuaMoodles.rightOffset - 32 * self.scale
     
     local y = LuaMoodles.topOffset
     if self.playerNum >= 2 then
-        y = core:getScreenHeight() + y
+        y = core:getScreenHeight() / 2 + y
     end
     
     for _, moodle in pairs(self.moodles) do

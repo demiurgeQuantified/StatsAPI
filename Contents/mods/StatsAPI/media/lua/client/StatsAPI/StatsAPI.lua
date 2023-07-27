@@ -159,31 +159,65 @@ end
 local moodleName = "Moodles_%s_lvl%d"
 local moodleDesc = "Moodles_%s_desc_lvl%d"
 
----@param moodleType string
----@param icon Texture|string
----@param levels int
----@param positive boolean
+---@param moodleType string Identifier for the moodle. Also used in determining the translation string for its names
+---@param icon Texture|string Icon for the moodle.
+---@param levels int|nil How many levels the moodle should have. (Default: 4)
+---@param positive boolean|nil Whether the moodle is a positive moodle. (Changes the background sprite, defaults to false)
 StatsAPI.addMoodle = function(moodleType, icon, levels, positive)
     if type(icon) == "string" then
         icon = getTexture(icon)
     end
+    levels = levels or 4
     
     local backgrounds = not positive and MoodleTemplate.Backgrounds.Negative or MoodleTemplate.Backgrounds.Positive
     local translations = {}
     
-    local lastNum
-    for i = 1, levels do
-        local num = lastNum or i
-        local name = getTextOrNull(string.format(moodleName, moodleType, i))
-        if not name then
-            lastNum = i - 1
-            num = lastNum
-            name = getText(string.format(moodleName, moodleType, lastNum))
+    if levels == 1 then
+        translations[1] = {name = getText("Moodles_" .. moodleType), desc = getText("Moodles_" .. moodleType .. "_desc")}
+    else
+        local lastNum
+        for i = 1, levels do
+            local num = lastNum or i
+            local name = getTextOrNull(string.format(moodleName, moodleType, num))
+            if not name then
+                lastNum = i - 1
+                num = lastNum
+                name = getText(string.format(moodleName, moodleType, lastNum))
+            end
+            translations[i] = {name = name, desc = getText(string.format(moodleDesc, moodleType, num))}
         end
-        translations[i] = {name = name, desc = getText(string.format(moodleDesc, moodleType, num))}
     end
     
     MoodleTemplate:new(moodleType, icon, backgrounds, translations)
+end
+
+---@param player IsoPlayer The player whose moodle to change.
+---@param moodleType string The type of moodle to change.
+---@param level int The moodle level to set.
+StatsAPI.setMoodleLevel = function(player, moodleType, level)
+    CharacterStats.get(player).luaMoodles.moodles[moodleType]:setLevel(level)
+end
+
+---@param player IsoPlayer The player whose moodle to change.
+---@param moodleType string The type of moodle to change.
+StatsAPI.getMoodleLevel = function(player, moodleType)
+    return CharacterStats.get(player).luaMoodles.moodles[moodleType].level
+end
+
+---@param player IsoPlayer The player whose moodle to change.
+---@param moodleType string The type of moodle to change.
+---@param numChevrons int The amount of chevrons to display.
+---@param down boolean|nil Should the chevron point down? Defaults to no change (false if unset)
+---@param positive boolean|nil Changes the colour of the chevron based on whether it's a positive or negative change. Defaults to no change (true if unset)
+StatsAPI.setMoodleChevron = function(player, moodleType, numChevrons, down, positive)
+    local moodle = CharacterStats.get(player).luaMoodles.moodles[moodleType]
+    moodle.chevronCount = numChevrons
+    if down ~= nil then
+        moodle.chevronUp = down
+    end
+    if positive ~= nil then
+        moodle.chevronPositive = positive
+    end
 end
 
 return StatsAPI
