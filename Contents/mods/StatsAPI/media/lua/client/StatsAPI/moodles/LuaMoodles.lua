@@ -31,7 +31,7 @@ LuaMoodles.new = function(self, stats)
     for i = 1, #MoodleTemplate.templates do
         ---@type MoodleTemplate
         local template = MoodleTemplate.templates[i]
-        local moodle = LuaMoodle:new(core:getScreenWidth() - LuaMoodles.rightOffset, LuaMoodles.topOffset, template, o)
+        local moodle = LuaMoodle:new(core:getScreenWidth() - 32 - LuaMoodles.rightOffset * LuaMoodles.scale, LuaMoodles.topOffset, template, o)
         o.moodles[template.type] = moodle
     end
     

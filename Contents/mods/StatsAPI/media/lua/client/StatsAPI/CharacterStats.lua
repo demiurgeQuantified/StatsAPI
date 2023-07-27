@@ -228,7 +228,13 @@ CharacterStats.updateMoodles = function(self)
     end
     
     self.luaMoodles.moodles.bleeding:setLevel(Math.min(self.bodyDamage:getNumPartsBleeding(), 4))
-    self.luaMoodles.moodles.CantSprint:setLevel(self.character.MoodleCantSprint and 1 or 0)
+    local cantSprint = self.luaMoodles.moodles.CantSprint
+    if self.character.MoodleCantSprint then
+        cantSprint:setLevel(1)
+        cantSprint:wiggle()
+    else
+        cantSprint:setLevel(0)
+    end
     
     self:updateTemperatureMoodles()
 end
