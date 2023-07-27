@@ -290,23 +290,23 @@ CharacterStats.applyOverTimeEffects = function(self)
 end
 
 ---@type table<IsoGameCharacter, CharacterStats>
-local CharacterStatsMap = {}
+CharacterStats.CharacterStatsMap = {}
 
 ---@param character IsoGameCharacter
 ---@return CharacterStats
 CharacterStats.create = function(character)
     local stats = CharacterStats:new(character)
-    CharacterStatsMap[character] = stats
+    CharacterStats.CharacterStatsMap[character] = stats
     return stats
 end
 
 ---@param character IsoGameCharacter
 ---@return CharacterStats
 CharacterStats.getOrCreate = function(character)
-    local stats = CharacterStatsMap[character]
+    local stats = CharacterStats.CharacterStatsMap[character]
     if not stats then
         stats = CharacterStats:new(character)
-        CharacterStatsMap[character] = stats
+        CharacterStats.CharacterStatsMap[character] = stats
     end
     return stats
 end
@@ -314,7 +314,7 @@ end
 ---@param character IsoGameCharacter
 ---@return CharacterStats|nil
 CharacterStats.get = function(character)
-    return CharacterStatsMap[character]
+    return CharacterStats.CharacterStatsMap[character]
 end
 
 
