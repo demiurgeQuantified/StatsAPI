@@ -208,9 +208,10 @@ CharacterStats.moodleThresholds = {
 }
 ---@param self CharacterStats
 CharacterStats.updateMoodles = function(self)
-    local stats = {stress = self.javaStats:getStress(), foodeaten = self.bodyDamage:getHealthFromFoodTimer(), endurance = 1 - self.javaStats:getEndurance(),
-    tired = self.fatigue, hungry = self.javaStats:getHunger(), panic = self.panic, sick = self.javaStats:getSickness(),
-    bored = self.javaStats:getBoredom(), unhappy = self.bodyDamage:getUnhappynessLevel(), thirst = self.javaStats:getThirst(), wet = self.bodyDamage:getWetness(),
+    -- TODO: ugh
+    local stats = {stress = self.stats.stress, foodeaten = self.bodyDamage:getHealthFromFoodTimer(), endurance = 1 - self.stats.endurance,
+    tired = self.stats.fatigue, hungry = self.stats.hunger, panic = self.stats.panic, sick = self.javaStats:getSickness(),
+    bored = self.stats.boredom, unhappy = self.stats.sadness, thirst = self.stats.thirst, wet = self.bodyDamage:getWetness(),
     hasacold = self.bodyDamage:getColdStrength(), injured = 100 - self.bodyDamage:getHealth(), pain = self.javaStats:getPain(),
     heavyload = self.character:getInventory():getCapacityWeight() / self.character:getMaxWeight(), drunk = self.javaStats:getDrunkenness(),
     windchill = Temperature.getWindChillAmountForPlayer(self.character), hyperthermia = self.temperature}
