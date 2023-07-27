@@ -38,9 +38,10 @@ local CarryWeight = require "StatsAPI/stats/CarryWeight"
 ---@field forceWakeUp boolean Forces the character to wake up on the next frame if true
 ---@field forceWakeUpTime number Forces the character to wake up at this time if not nil
 ---
----@field wellFed boolean Does the character have a food buff active?
----@field temperature number The character's current temperature
 ---@field oldNumZombiesVisible number The number of zombies the character could see on the previous frame
+---@field wellFed boolean Does the character have a food buff active?
+---@field carryWeight number The character's current maximum carry weight
+---@field temperature number The character's current temperature
 ---@field vehicle BaseVehicle|nil The character's current vehicle
 ---@field reading boolean Is the character currently reading?
 ---@field overTimeEffects table<int, OverTimeEffect> The character's active OverTimeEffects
@@ -213,7 +214,7 @@ CharacterStats.updateMoodles = function(self)
     tired = self.stats.fatigue, hungry = self.stats.hunger, panic = self.stats.panic, sick = self.javaStats:getSickness(),
     bored = self.stats.boredom, unhappy = self.stats.sadness, thirst = self.stats.thirst, wet = self.bodyDamage:getWetness(),
     hasacold = self.bodyDamage:getColdStrength(), injured = 100 - self.bodyDamage:getHealth(), pain = self.javaStats:getPain(),
-    heavyload = self.character:getInventory():getCapacityWeight() / self.character:getMaxWeight(), drunk = self.javaStats:getDrunkenness(),
+    heavyload = self.character:getInventory():getCapacityWeight() / self.carryWeight, drunk = self.javaStats:getDrunkenness(),
     windchill = Temperature.getWindChillAmountForPlayer(self.character), hyperthermia = self.temperature}
     
     for moodle, thresholds in pairs(CharacterStats.moodleThresholds) do
