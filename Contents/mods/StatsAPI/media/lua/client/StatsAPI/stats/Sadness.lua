@@ -15,12 +15,12 @@ Sadness.updateSadness = function(self)
     
     local sadnessChange = 0
     
-    local boredLevel = self.moodles:getMoodleLevel(MoodleType.Bored)
+    local boredLevel = self.luaMoodles.moodles.bored.level
     if boredLevel > 1 then
         sadnessChange = Sadness.SadnessIncrease * boredLevel
     end
     
-    local stressLevel = self.moodles:getMoodleLevel(MoodleType.Stress)
+    local stressLevel = self.luaMoodles.moodles.stress.level
     if stressLevel > 1 then
         sadnessChange = sadnessChange + Sadness.SadnessIncrease / 2 * stressLevel
     end

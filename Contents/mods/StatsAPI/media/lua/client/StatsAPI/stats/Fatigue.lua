@@ -176,10 +176,10 @@ Fatigue.canSleep = function(self)
     end
     
     if self.character:getSleepingTabletEffect() < 2000 then
-        if self.moodles:getMoodleLevel(MoodleType.Pain) >= 2 and self.fatigue <= 0.85 then
+        if self.luaMoodles.moodles.pain.level >= 2 and self.fatigue <= 0.85 then
             return false, getText("ContextMenu_PainNoSleep")
         end
-        if self.moodles:getMoodleLevel(MoodleType.Panic) >= 1 then
+        if self.luaMoodles.moodles.panic.level >= 1 then
             return false, getText("ContextMenu_PanicNoSleep")
         end
     end
