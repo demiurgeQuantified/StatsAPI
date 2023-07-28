@@ -78,6 +78,11 @@ end
 LuaMoodles.create = function(stats)
     local moodles = LuaMoodles:new(stats)
     LuaMoodles.instanceMap[stats.playerNum] = moodles
+    LuaMoodles.adjustPositions()
+    return moodles
+end
+
+LuaMoodles.adjustPositions = function()
     for i = 0, 3 do
         ---@type LuaMoodles
         local instance = LuaMoodles.instanceMap[i]
@@ -85,8 +90,9 @@ LuaMoodles.create = function(stats)
             instance:adjustPosition()
         end
     end
-    return moodles
 end
+
+Events.OnResolutionChange.Add(LuaMoodles.adjustPositions)
 
 ---@param self LuaMoodles
 LuaMoodles.cleanup = function(self)

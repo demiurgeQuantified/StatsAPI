@@ -128,7 +128,6 @@ LuaMoodle.render = function(self)
     end
 end
 
--- TODO: this isn't triggered during combat like in vanilla
 ---@param self LuaMoodle
 LuaMoodle.wiggle = function(self)
     self.oscillationLevel = 1
