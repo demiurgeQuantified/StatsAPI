@@ -101,7 +101,6 @@ StatsAPI.addConstantEffectHours = function(character, stat, amount, duration)
     StatsAPI.addConstantEffect(character, stat, amount / 3600, duration * 3600)
 end
 
-
 ---Toggles whether being injured causes characters to gain stress.
 ---@param injuryStress boolean Should injuries cause stress?
 StatsAPI.setStressFromInjuries = function(injuryStress)
@@ -114,26 +113,125 @@ StatsAPI.setStressFromInfection = function(infectionStress)
     Stress.infectionStress = infectionStress
 end
 
----Adds a constant change to stress
+---Adds a constant change to stress, with the value set to a percent of the maximum over a day
 ---@param sourceName string The name of the stress source for later identification
 ---@param dailyChange number The percent amount the stat should change by over a day
 StatsAPI.addStressChangeDaily = function(sourceName, dailyChange)
     Stress.modChanges[sourceName] = dailyChange / 86400 / 100
 end
 
----Adds a constant change to stress
+---Adds a constant change to stress, with the value set to a percent of the maximum over an hour
 ---@param sourceName string The name of the stress source for later identification
 ---@param hourlyChange number The percent amount the stat should change by over an hour
 StatsAPI.addStressChangeHourly = function(sourceName, hourlyChange)
     Stress.modChanges[sourceName] = hourlyChange / 3600 / 100
 end
 
----Adds a constant change to stress, the cause being whichever the mod maker wishes
+---Removes a previously added change to stress
 ---@param sourceName string The name of the stress source for later identification
 StatsAPI.removeStressChange = function(sourceName)
     Stress.modChanges[sourceName] = nil
 end
 
+---Adds a constant change to hunger, with the value set to a percent of the maximum over a day
+---@param sourceName string The name of the stress source for later identification
+---@param dailyChange number The percent amount the stat should change by over a day
+StatsAPI.addHungerChangeDaily = function(sourceName, dailyChange)
+    Hunger.modChanges[sourceName] = dailyChange / 86400
+end
+
+---Adds a constant change to hunger, with the value set to a percent of the maximum over an hour
+---@param sourceName string The name of the stress source for later identification
+---@param hourlyChange number The percent amount the stat should change by over an hour
+StatsAPI.addHungerChangeHourly = function(sourceName, hourlyChange)
+    Hunger.modChanges[sourceName] = hourlyChange / 3600
+end
+
+---Removes a previously added change to hunger
+---@param sourceName string The name of the stress source for later identification
+StatsAPI.removeHungerChange = function(sourceName)
+    Hunger.modChanges[sourceName] = nil
+end
+
+---Adds a constant change to thirst, with the value set to a percent of the maximum over a day
+---@param sourceName string The name of the stress source for later identification
+---@param dailyChange number The percent amount the stat should change by over a day
+StatsAPI.addThirstChangeDaily = function(sourceName, dailyChange)
+    Thirst.modChanges[sourceName] = dailyChange / 86400
+end
+
+---Adds a constant change to thirst, with the value set to a percent of the maximum over an hour
+---@param sourceName string The name of the stress source for later identification
+---@param hourlyChange number The percent amount the stat should change by over an hour
+StatsAPI.addThirstChangeHourly = function(sourceName, hourlyChange)
+    Thirst.modChanges[sourceName] = hourlyChange/ 3600
+end
+
+---Removes a previously added change to fatigue
+---@param sourceName string The name of the stress source for later identification
+StatsAPI.removeThirstChange = function(sourceName)
+    Thirst.modChanges[sourceName] = nil
+end
+
+---Adds a function that has to return a change in stress, with the value adjusted for daily change
+---@param sourceName string The name of the stress source for later identification
+---@param dailyChange function The function that returns a percentage change over a day
+StatsAPI.addStressChangeFunctionDaily = function(sourceName, dailyChange)
+    Stress.modFunctions[sourceName] = {dailyChange,1 / 86400 / 100}
+end
+
+---Adds a function that has to return a change in stress, with the value adjusted for hourly change
+---@param sourceName string The name of the stress source for later identification
+---@param hourlyChange function The function that returns a percentage change over an hour
+StatsAPI.addStressChangeFunctionHourly = function(sourceName, hourlyChange)
+    Stress.modFunctions[sourceName] = {hourlyChange,1 / 3600 / 100}
+end
+
+---Removes a previously added change to stress
+---@param sourceName string The name of the stress source for later identification
+StatsAPI.removeStressFunctionChange = function(sourceName)
+    Stress.modFunctions[sourceName] = nil
+end
+
+---Adds a function that has to return a change in hunger, with the value adjusted for daily change
+---@param sourceName string The name of the stress source for later identification
+---@param dailyChange function The function that returns a percentage change over a day
+StatsAPI.addHungerFunctionChangeDaily = function(sourceName, dailyChange)
+    Hunger.modFunctions[sourceName] = {dailyChange, 1 / 86400}
+end
+
+---Adds a function that has to return a change in hunger, with the value adjusted for hourly change
+---@param sourceName string The name of the stress source for later identification
+---@param hourlyChange function The function that returns a percentage change over an hour
+StatsAPI.addHungerFunctionChangeHourly = function(sourceName, hourlyChange)
+    Hunger.modFunctions[sourceName] = {hourlyChange, 1/ 3600}
+end
+
+---Removes a previously added change to hunger
+---@param sourceName string The name of the stress source for later identification
+StatsAPI.removeHungerFunctionChange = function(sourceName)
+    Hunger.modFunctions[sourceName] = nil
+end
+
+---Adds a function that has to return a change in thurst, with the value adjusted for daily change
+---@param sourceName string The name of the stress source for later identification
+---@param dailyChange function The function that returns a percentage change over a day
+StatsAPI.addThirstFunctionChangeDaily = function(sourceName, dailyChange)
+    Thirst.modFunctions[sourceName] = {dailyChange, 1 / 86400}
+end
+
+---Adds a function that has to return a change in thirst, with the value adjusted for hourly change
+---@param sourceName string The name of the stress source for later identification
+---@param hourlyChange function The function that returns a percentage change over an hour
+StatsAPI.addThirstFunctionChangeHourly = function(sourceName, hourlyChange)
+    Thirst.modFunctions[sourceName] = {hourlyChange, 1/ 3600}
+end
+
+---Removes a previously added change to fatigue
+---@param sourceName string The name of the stress source for later identification
+StatsAPI.removeThirstChange = function(sourceName)
+    Thirst.modChanges[sourceName] = nil
+end
 
 ---Prevents the vanilla trait effects from being added. Must be called before OnGameBoot or it will have no effect.
 StatsAPI.disableVanillaTraits = function()
