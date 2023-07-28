@@ -236,12 +236,12 @@ Fatigue.doDelayToSleep = function(self, bedType)
     else
         delayToSleep = self.character:HasTrait("Insomniac") and 1 or 0.3
         
-        local painLevel = self.moodles:getMoodleLevel(MoodleType.Pain)
+        local painLevel = self.luaMoodles.moodles.pain.level
         if painLevel > 0 then
             delayToSleep = delayToSleep + 1 + painLevel * 0.2
         end
         
-        if self.moodles:getMoodleLevel(MoodleType.Stress) > 0 then
+        if self.luaMoodles.moodles.stress.level > 0 then
             delayToSleep = delayToSleep * 1.2
         end
     
