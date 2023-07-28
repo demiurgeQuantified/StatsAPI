@@ -13,7 +13,6 @@ local Boredom = require "StatsAPI/stats/Boredom"
 local Sadness = require "StatsAPI/stats/Sadness"
 local CarryWeight = require "StatsAPI/stats/CarryWeight"
 
--- TODO: cache all the stats after they're applied so that we don't need to get them again for OverTimeEffects
 ---@class CharacterStats
 ---@field stats StatsContainer The character's stats
 ---
@@ -24,6 +23,7 @@ local CarryWeight = require "StatsAPI/stats/CarryWeight"
 ---@field moodles Moodles The character's Moodles object
 ---@field thermoregulator Thermoregulator The character's Thermoregulator object
 ---@field luaMoodles LuaMoodles The character's LuaMoodles object
+---@field tickCount int How many times this character's stats have been updated
 ---
 ---@field maxWeightDelta number The character's carry weight multiplier from traits
 ---@field panicMultiplier number The character's panic multiplier from traits
@@ -54,6 +54,7 @@ CharacterStats.forceWakeUp = false
 CharacterStats.asleep = false
 CharacterStats.delayToSleep = 0
 CharacterStats.staticCarryMod = 0
+CharacterStats.tickCount = 0
 
 CharacterStats.persistentStats = {forceWakeUpTime = true, overTimeEffects = true}
 ---@param self CharacterStats
@@ -97,8 +98,6 @@ CharacterStats.new = function(self, character)
     modData.StatsAPI = modData.StatsAPI or {}
     modData.StatsAPI.StatsData = modData.StatsAPI.StatsData or {}
     o.modData = modData.StatsAPI.StatsData
-    
-    o:refreshTraits()
     
     o.modData.overTimeEffects = o.modData.overTimeEffects or {}
     
@@ -146,8 +145,6 @@ CharacterStats.updateCache = function(self)
     self.temperature = self.bodyDamage:getTemperature()
 end
 
--- TODO: this isn't called when the player's weight changes
--- TODO: check java for other possible unhandled trait changes
 ---@param self CharacterStats
 CharacterStats.refreshTraits = function(self)
     self.maxWeightDelta = CarryWeight.getMaxWeightDelta(self.character)
@@ -161,6 +158,11 @@ end
 ---@param self CharacterStats
 CharacterStats.CalculateStats = function(self)
     self.stats:fromJava()
+    
+    if self.tickCount % 2000 == 0 then -- weight traits update every 2000 ticks
+        self:refreshTraits()
+    end
+    
     self:updateCache()
 
     -- Stats stats
@@ -187,6 +189,7 @@ CharacterStats.CalculateStats = function(self)
     self:updateMoodles()
     
     self.stats:toJava()
+    self.tickCount = self.tickCount + 1
 end
 
 CharacterStats.moodleThresholds = {
@@ -278,7 +281,6 @@ end
 
 ---@param self CharacterStats
 CharacterStats.applyOverTimeEffects = function(self)
-    -- TODO: cache all the changes to each stat instead of applying them immediately, so if multiple effects are active it won't waste performance applying multiple times
     for j = 1, #self.overTimeEffects do
         local effect = self.overTimeEffects[j]
         local delta = Globals.delta
