@@ -23,7 +23,7 @@ end
 CarryWeight.getCarryWeightModifier = function(stats)
     local carryModifier = stats.staticCarryMod
     
-    local hungryLevel = stats.moodles:getMoodleLevel(MoodleType.Hungry)
+    local hungryLevel = stats.luaMoodles.moodles.hungry.level
     if hungryLevel >= 2 then
         carryModifier = carryModifier - 1
         if hungryLevel >= 3 then
@@ -31,7 +31,7 @@ CarryWeight.getCarryWeightModifier = function(stats)
         end
     end
     
-    local thirstLevel = stats.moodles:getMoodleLevel(MoodleType.Thirst)
+    local thirstLevel = stats.luaMoodles.moodles.thirst.level
     if thirstLevel >= 2 then
         carryModifier = carryModifier - 1
         if thirstLevel >= 3 then
@@ -39,16 +39,16 @@ CarryWeight.getCarryWeightModifier = function(stats)
         end
     end
     
-    local sicknessLevel = stats.moodles:getMoodleLevel(MoodleType.Sick)
+    local sicknessLevel = stats.luaMoodles.moodles.sick.level
     if sicknessLevel >= 2 then
         carryModifier = carryModifier - (sicknessLevel - 1)
     end
     
-    if stats.moodles:getMoodleLevel(MoodleType.Bleeding) >= 2 then
+    if stats.luaMoodles.moodles.bleeding.level >= 2 then
         carryModifier = carryModifier - 1
     end
     
-    local injuredLevel = stats.moodles:getMoodleLevel(MoodleType.Injured)
+    local injuredLevel = stats.luaMoodles.moodles.injured.level
     if injuredLevel >= 2 then
         carryModifier = carryModifier - (injuredLevel - 1)
     end
