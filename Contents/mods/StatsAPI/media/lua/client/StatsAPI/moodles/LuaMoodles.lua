@@ -1,5 +1,3 @@
-local core = getCore()
-
 local MoodleTemplate = require "StatsAPI/moodles/MoodleTemplate"
 local LuaMoodle = require "StatsAPI/moodles/LuaMoodle"
 
@@ -31,7 +29,7 @@ LuaMoodles.new = function(self, stats)
     for i = 1, #MoodleTemplate.templates do
         ---@type MoodleTemplate
         local template = MoodleTemplate.templates[i]
-        local moodle = LuaMoodle:new(core:getScreenWidth() - 32 - LuaMoodles.rightOffset * LuaMoodles.scale, LuaMoodles.topOffset, template, o)
+        local moodle = LuaMoodle:new(0, 0, template, o) -- position will be overriden by adjustPosition anyway
         o.moodles[template.type] = moodle
     end
     
@@ -66,16 +64,8 @@ end
 
 ---@param self LuaMoodles
 LuaMoodles.adjustPosition = function(self)
-    local x = core:getScreenWidth()
-    if getNumActivePlayers() > 1 and (self.playerNum == 0 or self.playerNum == 2) then
-        x = x / 2
-    end
-    x = x - LuaMoodles.rightOffset - 32 * self.scale
-    
-    local y = LuaMoodles.topOffset
-    if self.playerNum >= 2 then
-        y = core:getScreenHeight() / 2 + y
-    end
+    local x = getPlayerScreenLeft(self.playerNum) + getPlayerScreenWidth(self.playerNum) - LuaMoodles.rightOffset - 32 * self.scale
+    local y = getPlayerScreenTop(self.playerNum) + LuaMoodles.topOffset
     
     for _, moodle in pairs(self.moodles) do
         moodle:setX(x)
