@@ -46,7 +46,8 @@ Stress.getTraitStress = function(character)
     -- TODO: handle cigarette stress here
     return stressChange
 end
----@param data StatsData
+
+---@param data CharacterStats
 Stress.getModdedStressChange = function(data)
     local stressChange = 0
     for _, modFunction in pairs(Stress.modFunctions) do
@@ -55,7 +56,7 @@ Stress.getModdedStressChange = function(data)
     for _, modChange in pairs(Stress.modChanges) do
         stressChange = stressChange + modChange
     end
-    return stressChange * Globals.gameWorldSecondsSinceLastUpdate
+    return stressChange * Globals.delta
 end
 
 ---@param self CharacterStats
@@ -63,7 +64,7 @@ Stress.updateStress = function(self)
     self.stats.stress = self.stats.stress + worldSoundManager:getStressFromSounds(self.character:getX(), self.character:getY(), self.character:getZ()) * ZomboidGlobals.StressFromSoundsMultiplier
     self.stats.stress = self.stats.stress + Stress.getHealthStress(self.character)
     self.stats.stress = self.stats.stress + Stress.getTraitStress(self.character)
-    self.stats.stress = self.stats.stress + Stress.getModdedStressChange()
+    self.stats.stress = self.stats.stress + Stress.getModdedStressChange(self)
     if not self.asleep then
         self.stats.stress = self.stats.stress - ZomboidGlobals.StressDecrease * Globals.delta
     end

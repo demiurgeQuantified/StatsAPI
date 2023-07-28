@@ -10,7 +10,7 @@ Hunger.modChanges = {}
 ---@type table<string, table<function,number>>
 Hunger.modFunctions = {}
 
----@param data StatsData
+---@param data CharacterStats
 Hunger.getModdedHungerChange = function(data)
     local hungerChange = 0
     for _, modFunction in pairs(Hunger.modFunctions) do
@@ -19,7 +19,7 @@ Hunger.getModdedHungerChange = function(data)
     for _, modChange in pairs(Hunger.modChanges) do
         hungerChange = hungerChange + modChange
     end
-    return hungerChange * Globals.gameWorldSecondsSinceLastUpdate
+    return hungerChange * Globals.delta
 end
 
 ---@param character IsoGameCharacter
@@ -66,7 +66,7 @@ Hunger.updateHunger = function(self)
     end
     --- TODO: Consider if the API should handle some conditions like moving or sleeping for modded changes, or whether that
     --- should fall on the API users to manage
-    hungerChange = hungerChange + Hunger.getModdedHungerChange() * appetiteMultiplier *  Globals.statsDecreaseMultiplier
+    hungerChange = hungerChange + Hunger.getModdedHungerChange(self) * appetiteMultiplier *  Globals.statsDecreaseMultiplier
     self.stats.hunger = self.stats.hunger + hungerChange
 end
 

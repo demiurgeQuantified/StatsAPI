@@ -9,7 +9,7 @@ Thirst.modChanges = {}
 ---@type table<string, table<function,number>>
 Thirst.modFunctions = {}
 
----@param data StatsData
+---@param data CharacterStats
 Thirst.getModdedThirstChange = function(data)
     local thirstChange = 0
     for _, modChange in pairs(Thirst.modFunctions) do
@@ -18,7 +18,7 @@ Thirst.getModdedThirstChange = function(data)
     for _, modChange in pairs(Thirst.modChanges) do
         thirstChange = thirstChange + modChange
     end
-    return thirstChange * Globals.gameWorldSecondsSinceLastUpdate
+    return thirstChange * Globals.delta
 end
 
 ---@param character IsoGameCharacter
@@ -46,7 +46,7 @@ Thirst.updateThirst = function(self)
         else
             self.stats.thirst = self.stats.thirst + ZomboidGlobals.ThirstSleepingIncrease * thirstMultiplier
         end
-        self.stats.thirst = self.stats.thirst + Thirst.getModdedThirstChange() * self.character:getThirstMultiplier() * thirstMultiplier
+        self.stats.thirst = self.stats.thirst + Thirst.getModdedThirstChange(self) * self.character:getThirstMultiplier() * thirstMultiplier
     end
     self.character:autoDrink()
 end
