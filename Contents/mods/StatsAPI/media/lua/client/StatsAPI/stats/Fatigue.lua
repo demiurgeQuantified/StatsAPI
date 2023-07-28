@@ -91,11 +91,10 @@ end
 ---@param self CharacterStats
 Fatigue.updateFatigue = function(self)
     if self.asleep then
-        if self.stats.fatigue > 0 then
+        if self.stats.fatigue > 0 and Globals.timeOfDay > self.delayToSleep then
             local bedMultiplier = Fatigue.bedEfficiency[self.character:getBedType()] or 1
-        
-            local fatigueDelta = 1 / Globals.gameTime:getMinutesPerDay() / 60 * Globals.multiplier / 2
-        
+            local fatigueDelta = Globals.timeOfDay - Globals.lastTimeOfDay
+    
             local fatigueDecrease = 0
             if self.stats.fatigue <= 0.3 then
                 fatigueDecrease = fatigueDelta / (self.fatigueMultiplierAsleep * 7) * 0.3
@@ -141,8 +140,8 @@ Fatigue.shouldWakeUp = function(self)
     
     local forceWakeUpTime = self.forceWakeUpTime or 9
     
-    local time = Globals.gameTime:getTimeOfDay()
-    local lastTime = Globals.gameTime:getLastTimeOfDay()
+    local time = Globals.timeOfDay
+    local lastTime = Globals.lastTimeOfDay
     if lastTime > time then
         if lastTime < forceWakeUpTime then
             time = time + 24
@@ -209,12 +208,14 @@ Fatigue.trySleep = function(self, bed)
     
     local sleepFor = Fatigue.getSleepDuration(self, bedType)
     
-    local sleepHours = (sleepFor + Globals.gameTime:getTimeOfDay()) % 24
+    local sleepHours = (sleepFor + Globals.timeOfDay) % 24
     
     self.character:setForceWakeUpTime(sleepHours)
     self.character:setAsleepTime(0.0)
     self.character:setAsleep(true)
+    
     getSleepingEvent():setPlayerFallAsleep(self.character, sleepFor);
+    Fatigue.doDelayToSleep(self, bedType)
     
     UIManager.setFadeBeforeUI(self.playerNum, true)
     UIManager.FadeOut(self.playerNum, 1)
@@ -223,6 +224,46 @@ Fatigue.trySleep = function(self, bed)
         UIManager.getSpeedControls():SetCurrentGameSpeed(3)
         save(true)
     end
+end
+
+---@param self CharacterStats
+---@param bedType string
+Fatigue.doDelayToSleep = function(self, bedType)
+    local delayToSleep
+    
+    if self.character:getSleepingTabletEffect() > 1000 then
+        delayToSleep = 0.1
+    else
+        delayToSleep = self.character:HasTrait("Insomniac") and 1 or 0.3
+        
+        local painLevel = self.moodles:getMoodleLevel(MoodleType.Pain)
+        if painLevel > 0 then
+            delayToSleep = delayToSleep + 1 + painLevel * 0.2
+        end
+        
+        if self.moodles:getMoodleLevel(MoodleType.Stress) > 0 then
+            delayToSleep = delayToSleep * 1.2
+        end
+    
+        local bedTypeSleepDelay = {
+            badBed = 1.3,
+            goodBed = 0.8,
+            floor = 1.6
+        }
+        
+        local bedDelay = bedTypeSleepDelay[bedType]
+        if bedDelay then
+            delayToSleep = delayToSleep * bedDelay
+        end
+        
+        if self.character:HasTrait("NightOwl") then
+            delayToSleep = delayToSleep * 0.5
+        end
+    end
+    
+    delayToSleep = ZombRandFloat(0, Math.min(delayToSleep, 2))
+    
+    self.delayToSleep = Globals.timeOfDay + delayToSleep
 end
 
 return Fatigue
