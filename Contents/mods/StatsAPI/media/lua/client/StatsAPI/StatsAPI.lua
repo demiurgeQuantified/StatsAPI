@@ -158,6 +158,7 @@ end
 local moodleName = "Moodles_%s_lvl%d"
 local moodleDesc = "Moodles_%s_desc_lvl%d"
 
+---Adds a new moodle. The new moodle not be added retroactively to existing players, so this should be used before gameplay starts.
 ---@param moodleType string Identifier for the moodle. Also used in determining the translation string for its names
 ---@param icon Texture|string Icon for the moodle.
 ---@param levels int|nil How many levels the moodle should have. (Default: 4)
@@ -190,6 +191,7 @@ StatsAPI.addMoodle = function(moodleType, icon, levels, positive)
     MoodleTemplate:new(moodleType, icon, backgrounds, translations)
 end
 
+---Sets the level of a player's moodle.
 ---@param player IsoPlayer The player whose moodle to change.
 ---@param moodleType string The type of moodle to change.
 ---@param level int The moodle level to set.
@@ -197,18 +199,21 @@ StatsAPI.setMoodleLevel = function(player, moodleType, level)
     CharacterStats.get(player).luaMoodles.moodles[moodleType]:setLevel(level)
 end
 
----@param player IsoPlayer The player whose moodle to change.
----@param moodleType string The type of moodle to change.
+---Returns the level of a player's moodle.
+---@param player IsoPlayer The player whose moodle level to return.
+---@param moodleType string The type of moodle to return.
 StatsAPI.getMoodleLevel = function(player, moodleType)
     return CharacterStats.get(player).luaMoodles.moodles[moodleType].level
 end
 
+---Makes a moodle wiggle. Generally used to indicate when a moodle is affecting a player. Called automatiaally when the moodle's level changes.
 ---@param player IsoPlayer The player whose moodle to wiggle.
 ---@param moodleType string The type of moodle to wiggle.
 StatsAPI.wiggleMoodle = function(player, moodleType)
     CharacterStats.get(player).luaMoodles.moodles[moodleType]:wiggle()
 end
 
+---Sets the chevron (arrows) on a moodle. Generally used to indicate the trend in change in intensity of a moodle.
 ---@param player IsoPlayer The player whose moodle to change.
 ---@param moodleType string The type of moodle to change.
 ---@param numChevrons int The amount of chevrons to display.
