@@ -34,8 +34,8 @@ local old_getMoodleLevel = moodles.getMoodleLevel
 ---@param self Moodles
 ---@param moodleType MoodleType|int
 moodles.getMoodleLevel = function(self, moodleType)
-    if instanceof(moodleType, MoodleType) then
-        moodleType = moodleType:ToIndex()
+    if instanceof(moodleType, "MoodleType") then
+        moodleType = MoodleType.ToIndex(moodleType)
     end
     local luaType = moodleTypeToLuaMoodle[moodleType]
     if not luaType then
