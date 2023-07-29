@@ -53,20 +53,20 @@ Hunger.updateHunger = function(self)
         else
             hungerChange = ZomboidGlobals.HungerIncreaseWhenExercise * appetiteMultiplier
         end
-        hungerChange = hungerChange * Globals.statsDecreaseMultiplier * self.character:getHungerMultiplier() * Globals.delta
     else
-        hungerChange = ZomboidGlobals.HungerIncreaseWhileAsleep * Globals.statsDecreaseMultiplier * self.character:getHungerMultiplier() * Globals.delta
+        hungerChange = ZomboidGlobals.HungerIncreaseWhileAsleep
         if self.wellFed then
-            hungerChange = hungerChange * appetiteMultiplier
-        else
-            -- the stats decrease multiplier getting added twice is probably a mistake, but i don't want to change vanilla behaviour
+            -- the stats decrease multiplier getting applied twice is probably a mistake, but i don't want to change vanilla behaviour
             -- plus this multiplies by zero by default anyway
             hungerChange = hungerChange * ZomboidGlobals.HungerIncreaseWhenWellFed * Globals.statsDecreaseMultiplier
+        else
+            hungerChange = hungerChange * appetiteMultiplier
         end
     end
-    --- TODO: Consider if the API should handle some conditions like moving or sleeping for modded changes, or whether that
-    --- should fall on the API users to manage
+    hungerChange = hungerChange * self.character:getHungerMultiplier() * Globals.delta
+
     hungerChange = hungerChange + Hunger.getModdedHungerChange(self) * appetiteMultiplier *  Globals.statsDecreaseMultiplier
+    hungerChange = hungerChange * Globals.statsDecreaseMultiplier
     self.stats.hunger = self.stats.hunger + hungerChange
 end
 
