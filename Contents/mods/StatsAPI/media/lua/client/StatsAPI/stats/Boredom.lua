@@ -36,7 +36,7 @@ Boredom.updateBoredom = function(self)
     
     if self.character:isInARoom() then
         boredomChange = self:getIdleBoredom()
-        if self.character:isSpeaking() then -- and not self.character.callOut -- we need a field api to access this
+        if self.character:isSpeaking() then
             boredomChange = boredomChange - Boredom.BoredomDecrease
         end
         
