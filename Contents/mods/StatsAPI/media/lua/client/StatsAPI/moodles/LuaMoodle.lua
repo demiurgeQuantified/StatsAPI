@@ -91,6 +91,13 @@ LuaMoodle.setRenderIndex = function(self, renderIndex)
 end
 
 ---@param self LuaMoodle
+LuaMoodle.updateHeightWidth = function(self)
+    local size = 32 * self.parent.scale
+    self:setWidth(size)
+    self:setHeight(size)
+end
+
+---@param self LuaMoodle
 LuaMoodle.updateOscillationLevel = function(self)
     if self.oscillationLevel > 0 then
         self.oscillationLevel = self.oscillationLevel - self.oscillationLevel * 0.04 / Globals.FPSMultiplier

@@ -70,6 +70,7 @@ LuaMoodles.adjustPosition = function(self)
     for _, moodle in pairs(self.moodles) do
         moodle:setX(x)
         moodle.baseY = y
+        moodle:updateHeightWidth()
     end
     self:sortMoodles()
 end
