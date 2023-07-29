@@ -14,7 +14,7 @@ Hunger.modFunctions = {}
 Hunger.getModdedHungerChange = function(data)
     local hungerChange = 0
     for _, modFunction in pairs(Hunger.modFunctions) do
-        hungerChange = hungerChange + modFunction[1](data) * modFunction[2]
+        hungerChange = hungerChange + modFunction[1](data) / modFunction[2]
     end
     for _, modChange in pairs(Hunger.modChanges) do
         hungerChange = hungerChange + modChange

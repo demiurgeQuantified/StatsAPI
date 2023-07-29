@@ -51,7 +51,7 @@ end
 Stress.getModdedStressChange = function(data)
     local stressChange = 0
     for _, modFunction in pairs(Stress.modFunctions) do
-        stressChange = stressChange + modFunction[1](data) * modFunction[2]
+        stressChange = stressChange + modFunction[1](data) / modFunction[2]
     end
     for _, modChange in pairs(Stress.modChanges) do
         stressChange = stressChange + modChange

@@ -13,12 +13,12 @@ Thirst.modFunctions = {}
 Thirst.getModdedThirstChange = function(data)
     local thirstChange = 0
     for _, modChange in pairs(Thirst.modFunctions) do
-        thirstChange = thirstChange + modChange[1](data) * modChange[2]
+        thirstChange = thirstChange + modChange[1](data) / modChange[2]
     end
     for _, modChange in pairs(Thirst.modChanges) do
         thirstChange = thirstChange + modChange
     end
-    return thirstChange * Globals.delta
+    return thirstChange
 end
 
 ---@param character IsoGameCharacter
