@@ -48,7 +48,6 @@ Thirst.updateThirst = function(self)
         end
         self.stats.thirst = self.stats.thirst + Thirst.getModdedThirstChange(self) * self.character:getThirstMultiplier() * thirstMultiplier
     end
-    self.character:autoDrink()
 end
 
 return Thirst

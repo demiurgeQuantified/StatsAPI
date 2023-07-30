@@ -190,6 +190,8 @@ CharacterStats.CalculateStats = function(self)
     
     self.stats:toJava()
     self.tickCount = self.tickCount + 1
+    
+    self.character:autoDrink()
 end
 
 CharacterStats.moodleThresholds = {
