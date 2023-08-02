@@ -1,5 +1,5 @@
 -- this is added to the same directory as in the main mod so that it doesn't matter which one overrides the other
-local bannedClasses = {ArrayList.class}
+local bannedClasses = {ArrayList.class, Stack.class}
 
 local getNumClassFields = getNumClassFields
 local getClassField = getClassField
@@ -16,7 +16,7 @@ for i = 1, #bannedClasses do
 end
 
 for class, metatable in pairs(__classmetatables) do
-    if not bannedClasses[class] and metatable.__index then -- something weird in here breaks it, Vector's exposure seems to be bugged?
+    if not bannedClasses[class] and metatable.__index and type(metatable.__index) == "table" then -- something weird in here breaks it, Vector's exposure seems to be bugged?
         local metaMetatable = {}
         
         local getField = function(self, key)
