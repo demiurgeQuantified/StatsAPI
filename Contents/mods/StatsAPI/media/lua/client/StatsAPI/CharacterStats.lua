@@ -217,7 +217,7 @@ CharacterStats.moodleThresholds = {
 ---@param self CharacterStats
 CharacterStats.updateMoodles = function(self)
     -- TODO: ugh
-    local stats = {stress = self.stats.stress, foodeaten = self.bodyDamage:getHealthFromFoodTimer(), endurance = 1 - self.stats.endurance,
+    local stats = {stress = self.stats.stress + self.javaStats:getStressFromCigarettes(), foodeaten = self.bodyDamage:getHealthFromFoodTimer(), endurance = 1 - self.stats.endurance,
     tired = self.stats.fatigue, hungry = self.stats.hunger, panic = self.stats.panic, sick = self.javaStats:getSickness(),
     bored = self.stats.boredom, unhappy = self.stats.sadness, thirst = self.stats.thirst, wet = self.bodyDamage:getWetness(),
     hasacold = self.bodyDamage:getColdStrength(), injured = 100 - self.bodyDamage:getHealth(), pain = self.javaStats:getPain(),
