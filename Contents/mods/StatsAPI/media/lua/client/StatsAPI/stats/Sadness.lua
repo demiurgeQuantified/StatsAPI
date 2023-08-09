@@ -11,7 +11,7 @@ ZomboidGlobals.UnhappinessIncrease = 0
 
 ---@param self CharacterStats
 Sadness.updateSadness = function(self)
-    if self.reading then return end
+    if self.reading or self.asleep then return end
     
     local sadnessChange = 0
     
