@@ -261,17 +261,20 @@ local moodleDesc = "Moodles_%s_desc_lvl%d"
 ---@param icon Texture|string Icon for the moodle.
 ---@param levels int|nil How many levels the moodle should have. (Default: 4)
 ---@param positive boolean|nil Whether the moodle is a positive moodle. (Changes the background sprite, defaults to false)
-StatsAPI.addMoodle = function(moodleType, icon, levels, positive)
+---@param descIdentifier string|nil Identifier for the moodle's description, if it is different to moodleType (vanilla compat)
+StatsAPI.addMoodle = function(moodleType, icon, levels, positive, descIdentifier)
     if type(icon) == "string" then
         icon = getTexture(icon)
     end
     levels = levels or 4
     
+    descIdentifier = descIdentifier or moodleType
+    
     local backgrounds = not positive and MoodleTemplate.Backgrounds.Negative or MoodleTemplate.Backgrounds.Positive
     local translations = {}
     
     if levels == 1 then
-        translations[1] = {name = getText("Moodles_" .. moodleType), desc = getText("Moodles_" .. moodleType .. "_desc")}
+        translations[1] = {name = getText("Moodles_" .. moodleType), desc = getText("Moodles_" .. descIdentifier .. "_desc")}
     else
         local lastNum
         for i = 1, levels do
@@ -282,7 +285,7 @@ StatsAPI.addMoodle = function(moodleType, icon, levels, positive)
                 num = lastNum
                 name = getText(string.format(moodleName, moodleType, lastNum))
             end
-            translations[i] = {name = name, desc = getText(string.format(moodleDesc, moodleType, num))}
+            translations[i] = {name = name, desc = getText(string.format(moodleDesc, descIdentifier, num))}
         end
     end
     
