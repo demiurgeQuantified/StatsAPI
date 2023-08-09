@@ -63,7 +63,7 @@ end
 ---@param self CharacterStats
 ---@param zombies int
 Panic.increasePanic = function(self, zombies)
-    self.stats.panic = self.stats.panic + self.panicIncrease * Panic.getPanicMultiplier(self.character) * zombies
+    self.stats.panic = self.stats.panic + self.panicIncrease * Panic.getPanicMultiplier(self.character) * zombies * self.panicMultiplier
 end
 
 ---@param self CharacterStats
