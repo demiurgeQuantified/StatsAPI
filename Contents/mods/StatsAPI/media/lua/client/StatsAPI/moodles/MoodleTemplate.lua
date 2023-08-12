@@ -1,3 +1,5 @@
+local Moodles = require("StatsAPI/Globals").Moodles
+
 ---@class MoodleTemplate
 ---@field type string
 ---@field texture Texture
@@ -40,10 +42,10 @@ MoodleTemplate.new = function(self, type, texture, backgrounds, text)
 end
 
 -- these are needed for the mod to function
-MoodleTemplate:new("dead", getTexture("media/ui/Moodles/Moodle_Icon_Dead.png"), MoodleTemplate.Backgrounds.Negative,
+MoodleTemplate:new(Moodles.Dead, getTexture("media/ui/Moodles/Moodle_Icon_Dead.png"), MoodleTemplate.Backgrounds.Negative,
                    {{name=getText("Moodles_dead_lvl1"), desc=getText("Moodles_dead_desc_lvl1")}})
 
-MoodleTemplate:new("zombie", getTexture("media/ui/Moodles/Moodle_Icon_Zombie.png"), MoodleTemplate.Backgrounds.Negative,
+MoodleTemplate:new(Moodles.Zombie, getTexture("media/ui/Moodles/Moodle_Icon_Zombie.png"), MoodleTemplate.Backgrounds.Negative,
                    {{name=getText("Moodles_zombie_lvl1"), desc=getText("Moodles_zombified_desc_lvl1")}})
 
 

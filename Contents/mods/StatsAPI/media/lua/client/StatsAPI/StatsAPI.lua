@@ -304,7 +304,7 @@ end
 ---@param player IsoPlayer The player whose moodle level to return.
 ---@param moodleType string The type of moodle to return.
 StatsAPI.getMoodleLevel = function(player, moodleType)
-    return CharacterStats.get(player).luaMoodles.moodles[moodleType].level
+    return CharacterStats.get(player):getMoodleLevel(moodleType)
 end
 
 ---Makes a moodle wiggle. Generally used to indicate when a moodle is affecting a player. Called automatiaally when the moodle's level changes.
@@ -330,5 +330,7 @@ StatsAPI.setMoodleChevron = function(player, moodleType, numChevrons, down, posi
         moodle.chevronPositive = positive
     end
 end
+
+StatsAPI.MoodleType = require("StatsAPI/Globals").Moodles
 
 return StatsAPI

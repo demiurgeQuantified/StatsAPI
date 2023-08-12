@@ -35,4 +35,30 @@ Events.OnGameTimeLoaded.Add(function()
     Globals.deltaMinutesPerDay = Globals.gameTime:getDeltaMinutesPerDay()
 end)
 
+Globals.Moodles = {
+    Hungry = "hungry",
+    FoodEaten = "foodeaten",
+    Thirst = "thirst",
+    Bored = "bored",
+    Stress = "stress",
+    Endurance = "endurance",
+    Tired = "tired",
+    Panic = "panic",
+    Sick = "sick",
+    Unhappy = "unhappy",
+    Bleeding = "bleeding",
+    Wet = "wet",
+    HasACold = "hasacold",
+    Injured = "injured",
+    Pain = "pain",
+    HeavyLoad = "heavyload",
+    Drunk = "drunk",
+    Hyperthermia = "hyperthermia",
+    Hypothermia = "hypothermia",
+    Windchill = "windchill",
+    CantSprint = "CantSprint",
+    Zombie = "zombie",
+    Dead = "dead"
+}
+
 return Globals

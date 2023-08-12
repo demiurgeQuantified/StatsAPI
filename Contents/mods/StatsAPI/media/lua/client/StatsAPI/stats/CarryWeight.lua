@@ -1,4 +1,5 @@
 local Math = require "StatsAPI/lib/Math"
+local Globals = require "StatsAPI/Globals"
 
 local CarryWeight = {}
 
@@ -23,7 +24,7 @@ end
 CarryWeight.getCarryWeightModifier = function(stats)
     local carryModifier = stats.staticCarryMod
     
-    local hungryLevel = stats.luaMoodles.moodles.hungry.level
+    local hungryLevel = stats:getMoodleLevel(Globals.Moodles.Hungry)
     if hungryLevel >= 2 then
         carryModifier = carryModifier - 1
         if hungryLevel >= 3 then
@@ -31,7 +32,7 @@ CarryWeight.getCarryWeightModifier = function(stats)
         end
     end
     
-    local thirstLevel = stats.luaMoodles.moodles.thirst.level
+    local thirstLevel = stats:getMoodleLevel(Globals.Moodles.Thirst)
     if thirstLevel >= 2 then
         carryModifier = carryModifier - 1
         if thirstLevel >= 3 then
@@ -39,16 +40,16 @@ CarryWeight.getCarryWeightModifier = function(stats)
         end
     end
     
-    local sicknessLevel = stats.luaMoodles.moodles.sick.level
+    local sicknessLevel = stats:getMoodleLevel(Globals.Moodles.Sick)
     if sicknessLevel >= 2 then
         carryModifier = carryModifier - (sicknessLevel - 1)
     end
     
-    if stats.luaMoodles.moodles.bleeding.level >= 2 then
+    if stats:getMoodleLevel(Globals.Moodles.Bleeding) >= 2 then
         carryModifier = carryModifier - 1
     end
     
-    local injuredLevel = stats.luaMoodles.moodles.injured.level
+    local injuredLevel = stats:getMoodleLevel(Globals.Moodles.Injured)
     if injuredLevel >= 2 then
         carryModifier = carryModifier - (injuredLevel - 1)
     end

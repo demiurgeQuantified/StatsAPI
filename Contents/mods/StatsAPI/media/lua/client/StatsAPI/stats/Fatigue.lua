@@ -166,10 +166,10 @@ Fatigue.canSleep = function(self)
     end
     
     if self.character:getSleepingTabletEffect() < 2000 then
-        if self.luaMoodles.moodles.pain.level >= 2 and self.stats.fatigue <= 0.85 then
+        if self:getMoodleLevel(Globals.Moodles.Pain) >= 2 and self.stats.fatigue <= 0.85 then
             return false, getText("ContextMenu_PainNoSleep")
         end
-        if self.luaMoodles.moodles.panic.level >= 1 then
+        if self:getMoodleLevel(Globals.Moodles.Panic) >= 1 then
             return false, getText("ContextMenu_PanicNoSleep")
         end
     end
@@ -236,12 +236,12 @@ Fatigue.doDelayToSleep = function(self, bedType)
     else
         delayToSleep = self.character:HasTrait("Insomniac") and 1 or 0.3
         
-        local painLevel = self.luaMoodles.moodles.pain.level
+        local painLevel = self:getMoodleLevel(Globals.Moodles.Pain)
         if painLevel > 0 then
             delayToSleep = delayToSleep + 1 + painLevel * 0.2
         end
         
-        if self.luaMoodles.moodles.stress.level > 0 then
+        if self:getMoodleLevel(Globals.Moodles.Stress) > 0 then
             delayToSleep = delayToSleep * 1.2
         end
     

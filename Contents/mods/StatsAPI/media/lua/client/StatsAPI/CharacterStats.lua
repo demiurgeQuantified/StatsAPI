@@ -141,7 +141,7 @@ CharacterStats.updateCache = function(self)
     self.asleep = self.character:isAsleep()
     self.vehicle = self.character:getVehicle()
     self.reading = self.character:isReading()
-    self.wellFed = self.luaMoodles.moodles.foodeaten.level ~= 0
+    self.wellFed = self:getMoodleLevel(Globals.Moodles.FoodEaten) ~= 0
     self.temperature = self.bodyDamage:getTemperature()
 end
 
@@ -293,6 +293,14 @@ CharacterStats.applyOverTimeEffects = function(self)
         end
         self.stats[effect.stat] = self.stats[effect.stat] + effect.amount * delta
     end
+end
+
+---@param self CharacterStats
+---@param moodle string
+---@return int
+---@see LuaMoodles#getMoodleLevel
+CharacterStats.getMoodleLevel = function(self, moodle)
+    return self.luaMoodles:getMoodleLevel(moodle)
 end
 
 ---@type table<IsoGameCharacter, CharacterStats>

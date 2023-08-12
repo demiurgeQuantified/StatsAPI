@@ -50,30 +50,30 @@ VanillaMoodles.onWeaponHit = function(attacker, weapon, target, damage)
         pain = pain + bodyDamage:getBodyPart(parts[i]):getPain()
     end
     if pain > 10 then
-        StatsAPI.wiggleMoodle(attacker, "pain")
-        StatsAPI.wiggleMoodle(attacker, "injured")
+        StatsAPI.wiggleMoodle(attacker, StatsAPI.MoodleType.Panic)
+        StatsAPI.wiggleMoodle(attacker, StatsAPI.MoodleType.Injured)
     end
     
-    local panicLevel = StatsAPI.getMoodleLevel(attacker, "panic")
+    local panicLevel = StatsAPI.getMoodleLevel(attacker, StatsAPI.MoodleType.Panic)
     
     if weapon:isRanged() then
         if attacker:getPerkLevel(Perks.Aiming) < 6 and panicLevel > 2 then
-            StatsAPI.wiggleMoodle(attacker, "panic")
+            StatsAPI.wiggleMoodle(attacker, StatsAPI.MoodleType.Panic)
         end
     else
         if panicLevel > 1 then
-            StatsAPI.wiggleMoodle(attacker, "panic")
+            StatsAPI.wiggleMoodle(attacker, StatsAPI.MoodleType.Panic)
         end
-        if StatsAPI.getMoodleLevel(attacker, "endurance") > 0 then
-            StatsAPI.wiggleMoodle(attacker, "endurance")
+        if StatsAPI.getMoodleLevel(attacker, StatsAPI.MoodleType.Endurance) > 0 then
+            StatsAPI.wiggleMoodle(attacker, StatsAPI.MoodleType.Endurance)
         end
-        if StatsAPI.getMoodleLevel(attacker, "tired") > 0 then
-            StatsAPI.wiggleMoodle(attacker, "tired")
+        if StatsAPI.getMoodleLevel(attacker, StatsAPI.MoodleType.Tired) > 0 then
+            StatsAPI.wiggleMoodle(attacker, StatsAPI.MoodleType.Tired)
         end
     end
     
-    if StatsAPI.getMoodleLevel(attacker, "stress") > 1 then
-        StatsAPI.wiggleMoodle(attacker, "stress")
+    if StatsAPI.getMoodleLevel(attacker, StatsAPI.MoodleType.Stress) > 1 then
+        StatsAPI.wiggleMoodle(attacker, StatsAPI.MoodleType.Stress)
     end
 end
 

@@ -75,6 +75,13 @@ LuaMoodles.adjustPosition = function(self)
     self:sortMoodles()
 end
 
+---@param self LuaMoodles
+---@param moodle string
+---@return int
+LuaMoodles.getMoodleLevel = function(self, moodle)
+    return self.moodles[moodle].level
+end
+
 ---@param stats CharacterStats
 LuaMoodles.create = function(stats)
     local moodles = LuaMoodles:new(stats)
