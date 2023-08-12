@@ -256,36 +256,32 @@ end
 local moodleName = "Moodles_%s_lvl%d"
 local moodleDesc = "Moodles_%s_desc_lvl%d"
 
----Adds a new moodle. The new moodle not be added retroactively to existing players, so this should be used before gameplay starts.
+---Adds a new moodle. The new moodle will not be added retroactively to existing players, so this should be used before gameplay starts.
 ---@param moodleType string Identifier for the moodle. Also used in determining the translation string for its names
 ---@param icon Texture|string Icon for the moodle.
 ---@param levels int|nil How many levels the moodle should have. (Default: 4)
 ---@param positive boolean|nil Whether the moodle is a positive moodle. (Changes the background sprite, defaults to false)
----@param descIdentifier string|nil Identifier for the moodle's description, if it is different to moodleType (vanilla compat)
-StatsAPI.addMoodle = function(moodleType, icon, levels, positive, descIdentifier)
+---@param translationId string|nil Identifier for the moodle's translations, if it is different to moodleType
+---@param descIdentifier string|nil Identifier for the moodle's description translations, if it is different to moodleType *and* translationId
+StatsAPI.addMoodle = function(moodleType, icon, levels, positive, translationId, descIdentifier)
     if type(icon) == "string" then
         icon = getTexture(icon)
     end
     levels = levels or 4
     
-    descIdentifier = descIdentifier or moodleType
-    
     local backgrounds = not positive and MoodleTemplate.Backgrounds.Negative or MoodleTemplate.Backgrounds.Positive
     local translations = {}
     
+    local nameId = translationId or moodleType
+    local descId = descIdentifier or nameId
+    
     if levels == 1 then
-        translations[1] = {name = getText("Moodles_" .. moodleType), desc = getText("Moodles_" .. descIdentifier .. "_desc")}
+        translations[1] = {name = getText("Moodles_" .. nameId), desc = getText("Moodles_" .. descId .. "_desc")}
     else
-        local lastNum
         for i = 1, levels do
-            local num = lastNum or i
-            local name = getTextOrNull(string.format(moodleName, moodleType, num))
-            if not name then
-                lastNum = i - 1
-                num = lastNum
-                name = getText(string.format(moodleName, moodleType, lastNum))
-            end
-            translations[i] = {name = name, desc = getText(string.format(moodleDesc, descIdentifier, num))}
+            local name = getText(string.format(moodleName, nameId, i))
+            local desc = getText(string.format(moodleDesc, descId, i))
+            translations[i] = {name = name, desc = desc}
         end
     end
     
@@ -307,7 +303,7 @@ StatsAPI.getMoodleLevel = function(player, moodleType)
     return CharacterStats.get(player):getMoodleLevel(moodleType)
 end
 
----Makes a moodle wiggle. Generally used to indicate when a moodle is affecting a player. Called automatiaally when the moodle's level changes.
+---Makes a moodle wiggle. Generally used to indicate when a moodle is affecting a player. Called automatically when the moodle's level changes.
 ---@param player IsoPlayer The player whose moodle to wiggle.
 ---@param moodleType string The type of moodle to wiggle.
 StatsAPI.wiggleMoodle = function(player, moodleType)
