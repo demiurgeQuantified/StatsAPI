@@ -71,15 +71,15 @@ Fatigue.getSleepDuration = function(self, bedType)
     return sleepLength
 end
 
----@param character IsoGameCharacter
+---@param self CharacterStats
 ---@param bed IsoObject|nil
 ---@return string
-Fatigue.getBedType = function(character, bed)
+Fatigue.getBedType = function(self, bed)
     local bedType = "badBed";
     
     if bed then
         bedType = bed:getProperties():Val("BedType") or "averageBed";
-    elseif character:getVehicle() then
+    elseif self.vehicle then
         bedType = "averageBed";
     else
         bedType = "floor";
