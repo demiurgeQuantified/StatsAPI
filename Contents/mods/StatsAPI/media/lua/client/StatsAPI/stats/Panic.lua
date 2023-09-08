@@ -69,7 +69,7 @@ end
 ---@param self CharacterStats
 Panic.reducePanic = function(self)
     if self.stats.panic > 0 then
-        self.stats.panic = self.stats.panic - (self.panicReduction * Globals.multiplier / 1.6 - Panic.getSurvivalReduction(self)) * Panic.getPanicReductionModifier(self)
+        self.stats.panic = self.stats.panic - (self.panicReduction * Globals.multiplier / 1.6 + Panic.getSurvivalReduction(self)) * Panic.getPanicReductionModifier(self)
     end
 end
 
