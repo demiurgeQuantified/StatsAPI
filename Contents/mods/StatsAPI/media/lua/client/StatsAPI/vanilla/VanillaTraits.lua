@@ -31,10 +31,11 @@ VanillaTraits.addTraitModifiers = function()
         StatsAPI.addTraitPanicModifier("Brave", 0.3)
         StatsAPI.addTraitPanicModifier("Desensitized", 0)
     
-        StatsAPI.addCarryWeightModifier("Strong", 1.5)
-        StatsAPI.addCarryWeightModifier("Weak", 0.75)
-        StatsAPI.addCarryWeightModifier("Feeble", 0.9)
-        StatsAPI.addCarryWeightModifier("Stout", 1.25)
+        -- while these weight modifiers are technically defined in vanilla, an oversight causes them not to be applied
+        --StatsAPI.addCarryWeightModifier("Strong", 1.5)
+        --StatsAPI.addCarryWeightModifier("Weak", 0.75)
+        --StatsAPI.addCarryWeightModifier("Feeble", 0.9)
+        --StatsAPI.addCarryWeightModifier("Stout", 1.25)
     end
 end
 
