@@ -68,7 +68,7 @@ CarryWeight.updateCarryWeight = function(self)
     carryWeight = carryWeight * self.maxWeightDelta
     
     self.carryWeight = Math.max(carryWeight, 0)
-    self.character:setMaxWeight(self.carryWeight)
+    self.character:setMaxWeight(Math.floor(self.carryWeight))
 end
 
 return CarryWeight
