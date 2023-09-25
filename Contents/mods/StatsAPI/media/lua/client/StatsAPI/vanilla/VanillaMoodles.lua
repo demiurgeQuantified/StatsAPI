@@ -35,6 +35,7 @@ Events.OnGameBoot.Add(VanillaMoodles.addMoodles)
 ---@param target IsoMovingObject
 ---@param damage number
 VanillaMoodles.onWeaponHit = function(attacker, weapon, target, damage)
+    if not attacker:isLocal() then return end
     local parts
     if attacker:isAimAtFloor() and attacker:isDoShove() then
         parts = {BodyPartType.UpperLeg_L, BodyPartType.LowerLeg_L, BodyPartType.Foot_L,
