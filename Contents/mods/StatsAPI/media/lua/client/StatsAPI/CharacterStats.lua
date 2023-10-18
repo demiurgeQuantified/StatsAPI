@@ -335,7 +335,9 @@ end
 
 ---@param character IsoPlayer
 CharacterStats.OnCalculateStats = function(character)
-    CharacterStats.get(character):CalculateStats()
+    local stats = CharacterStats.get(character)
+    if not stats then return end
+    stats:CalculateStats()
 end
 
 Hook.CalculateStats.Add(CharacterStats.OnCalculateStats)
