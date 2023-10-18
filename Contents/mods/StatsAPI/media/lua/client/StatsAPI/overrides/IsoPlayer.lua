@@ -29,3 +29,12 @@ isoPlayer.setMaxWeightDelta = function(self, maxWeightDelta)
     CharacterStats.getOrCreate(self).maxWeightDelta = maxWeightDelta
     old_setMaxWeightDelta(self, maxWeightDelta)
 end
+
+-- TODO: possible optimisation: this delegates to Moodles.getMoodleLevel but that function then searches for the IsoPlayer, which we already have in this case
+-- TODO: hard overwrite :(
+---@param self IsoPlayer
+---@param moodleType MoodleType
+---@return int
+isoPlayer.getMoodleLevel = function(self, moodleType)
+    return self:getMoodles():getMoodleLevel(moodleType)
+end
