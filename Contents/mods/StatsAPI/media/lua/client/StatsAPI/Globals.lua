@@ -21,8 +21,9 @@ Events.OnTickEvenPaused.Add(function()
     Globals.gameWorldSecondsSinceLastUpdate = Globals.gameTime:getGameWorldSecondsSinceLastUpdate()
     Globals.FPSMultiplier = Globals.gameTime.FPSMultiplier -- this might seem unnecessary, but java field accesses are disguised method calls
     
-    Globals.lastTimeOfDay = Globals.timeOfDay
     Globals.timeOfDay = Globals.gameTime:getTimeOfDay()
+    -- we can't just cache the one from last frame because in multiplayer game time sync will often cause negative time gaps
+    Globals.lastTimeOfDay = Globals.gameTime:getLastTimeOfDay()
 end)
 
 

@@ -53,9 +53,9 @@ Fatigue.getSleepDuration = function(self, bedType)
     local sleepLength = ZombRand(self.stats.fatigue * 10, self.stats.fatigue * 13) + 1;
     
     if bedType == "goodBed" then
-        sleepLength = sleepLength -1;
+        sleepLength = sleepLength - 1;
     elseif bedType == "badBed" then
-        sleepLength = sleepLength +1;
+        sleepLength = sleepLength + 1;
     elseif bedType == "floor" then
         sleepLength = sleepLength * 0.7;
     end
