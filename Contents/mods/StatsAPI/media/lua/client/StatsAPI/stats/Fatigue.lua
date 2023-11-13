@@ -162,15 +162,15 @@ end
 Fatigue.canSleep = function(self)
     local zombiesNearby = self.oldNumZombiesVisible > 0 or self.javaStats:getNumChasingZombies() > 0 or self.javaStats:getNumVeryCloseZombies() > 0
     if zombiesNearby then
-        return false, getText("IGUI_Sleep_NotSafe")
+        return false, "IGUI_Sleep_NotSafe"
     end
     
     if self.character:getSleepingTabletEffect() < 2000 then
         if self:getMoodleLevel(Globals.Moodles.Pain) >= 2 and self.stats.fatigue <= 0.85 then
-            return false, getText("ContextMenu_PainNoSleep")
+            return false, "ContextMenu_PainNoSleep"
         end
         if self:getMoodleLevel(Globals.Moodles.Panic) >= 1 then
-            return false, getText("ContextMenu_PanicNoSleep")
+            return false, "ContextMenu_PanicNoSleep"
         end
     end
     
@@ -187,7 +187,7 @@ Fatigue.trySleep = function(self, bed)
     local canSleep, reason = Fatigue.canSleep(self)
     if not canSleep then
         if reason then
-            self.character:Say(reason)
+            self.character:Say(getText(reason))
         end
         return
     end
