@@ -37,7 +37,7 @@ local CarryWeight = require "StatsAPI/stats/CarryWeight"
 ---
 ---@field forceWakeUp boolean Forces the character to wake up on the next frame if true
 ---@field forceWakeUpTime number Forces the character to wake up at this time if not nil
----@field delayToSleep number The character won't actually recover fatigue until after this time
+---@field timeUntilSleep number A timer, in hours, until the player will actually regain fatigue from sleeping
 ---
 ---@field oldNumZombiesVisible number The number of zombies the character could see on the previous frame
 ---@field wellFed boolean Does the character have a food buff active?
@@ -52,7 +52,7 @@ CharacterStats.panicReduction = 0.06
 CharacterStats.oldNumZombiesVisible = 0
 CharacterStats.forceWakeUp = false
 CharacterStats.asleep = false
-CharacterStats.delayToSleep = 0
+CharacterStats.timeUntilSleep = 0
 CharacterStats.staticCarryMod = 0
 CharacterStats.tickCount = 0
 

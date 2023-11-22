@@ -91,15 +91,23 @@ end
 ---@param self CharacterStats
 Fatigue.updateFatigue = function(self)
     if self.asleep then
-        if self.stats.fatigue > 0 and Globals.timeOfDay > self.delayToSleep then
+        local timeChange = Globals.timeOfDay - Globals.lastTimeOfDay
+        if timeChange < 0 then
+            timeChange = timeChange + 24
+        end
+        
+        if self.timeUntilSleep > 0 then
+            self.timeUntilSleep = self.timeUntilSleep - timeChange
+        end
+        
+        if self.stats.fatigue > 0 and self.timeUntilSleep <= 0 then
             local bedMultiplier = Fatigue.bedEfficiency[self.character:getBedType()] or 1
-            local fatigueDelta = Globals.timeOfDay - Globals.lastTimeOfDay
     
             local fatigueDecrease = 0
             if self.stats.fatigue <= 0.3 then
-                fatigueDecrease = fatigueDelta / (self.fatigueMultiplierAsleep * 7) * 0.3
+                fatigueDecrease = timeChange / (self.fatigueMultiplierAsleep * 7) * 0.3
             else
-                fatigueDecrease = fatigueDelta / (self.fatigueMultiplierAsleep * 5) * 0.7
+                fatigueDecrease = timeChange / (self.fatigueMultiplierAsleep * 5) * 0.7
             end
             self.stats.fatigue = self.stats.fatigue - fatigueDecrease * self.sleepEfficiency * bedMultiplier
         end
@@ -245,6 +253,7 @@ Fatigue.doDelayToSleep = function(self, bedType)
             delayToSleep = delayToSleep * 1.2
         end
     
+        -- TODO: makes this accessible
         local bedTypeSleepDelay = {
             badBed = 1.3,
             goodBed = 0.8,
@@ -263,7 +272,7 @@ Fatigue.doDelayToSleep = function(self, bedType)
     
     delayToSleep = ZombRandFloat(0, Math.min(delayToSleep, 2))
     
-    self.delayToSleep = Globals.timeOfDay + delayToSleep
+    self.timeUntilSleep = delayToSleep
 end
 
 return Fatigue
